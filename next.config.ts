@@ -1,7 +1,16 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export', // Enable static exports
+  images: {
+    unoptimized: true, // Required for static export
+  },
+  webpack: (config) => {
+    // Handle D3.js imports
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts', '.tsx']
+    }
+    return config
+  }
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default nextConfig;
+export default nextConfig
