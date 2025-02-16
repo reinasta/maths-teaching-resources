@@ -2,10 +2,10 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-interface Point {
-  x: number;
-  y: number;
-}
+//interface Point {
+//  x: number;
+//  y: number;
+//}
 
 interface CoordinatePlaneProps {
   width?: number;
