@@ -2,6 +2,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import CoordinatePlane from '../CoordinatePlane';
 
+interface Dimensions {
+  width: number;
+  height: number;
+}
+
 interface Point {
   coordinates: [number, number];
   label: string;
@@ -17,14 +22,11 @@ const POINTS: Point[] = [
   { coordinates: [8, 24], label: '(8, 24)', type: 'practice' }
 ];
 
-// Maximum width for the graph container
-const MAX_GRAPH_WIDTH = 800;
-
 const PlottingPointsSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({
-    width: MAX_GRAPH_WIDTH,
-    height: MAX_GRAPH_WIDTH * 0.75
+  const [dimensions, setDimensions] = useState<Dimensions>({
+    width: 800,
+    height: 600
   });
   const [visiblePoints, setVisiblePoints] = useState<Set<number>>(new Set());
   const [userAnswers, setUserAnswers] = useState<Set<number>>(new Set());
@@ -32,15 +34,10 @@ const PlottingPointsSection: React.FC = () => {
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
-        const containerWidth = Math.min(
-          containerRef.current.offsetWidth,
-          MAX_GRAPH_WIDTH
-        );
-        const aspectRatio = 0.75; // 4:3 aspect ratio
-        
+        const containerWidth = containerRef.current.offsetWidth;
         setDimensions({
           width: containerWidth,
-          height: containerWidth * aspectRatio
+          height: Math.min(containerWidth * 0.75, window.innerHeight * 0.85)
         });
       }
     };
@@ -79,7 +76,7 @@ const PlottingPointsSection: React.FC = () => {
     });
   };
 
-  const renderPointButton = (point: Point, index: number) => {
+  const renderButton = (point: Point, index: number) => {
     const isExample = point.type === 'example';
     const isActive = isExample 
       ? visiblePoints.has(index)
@@ -90,7 +87,6 @@ const PlottingPointsSection: React.FC = () => {
         key={index}
         className={`conversion-button ${isActive ? 'active' : ''}`}
         onClick={() => isExample ? handlePointClick(index) : handleAnswerClick(index)}
-        aria-pressed={isActive}
       >
         {point.label}
       </button>
@@ -99,57 +95,34 @@ const PlottingPointsSection: React.FC = () => {
 
   return (
     <section className="w-full">
-      <h2 className="text-h2 mb-6">Practice: Plot These Points</h2>
-      
-      {/* Updated grid container with vertical centering */}
-      <div className="grid lg:grid-cols-[2fr_1fr] gap-8 items-center max-w-7xl mx-auto">
-
-        {/* Graph Container */}
-        <div 
-          ref={containerRef} 
-          className="w-full bg-white rounded-lg shadow-sm p-4"
-        >
-          <CoordinatePlane
-            width={dimensions.width}
-            height={dimensions.height}
-            points={POINTS.map(p => p.coordinates)}
-            visiblePoints={new Set([...visiblePoints, ...userAnswers])}
-            axisLabels={{ x: 'x', y: 'y' }}
-            // Updated margins for larger fonts
-            margins={{
-              top: 80,
-              right: 140,
-              bottom: 100,
-              left: 120
-            }}
-            gridLines={{
-              x: Array.from({ length: 11 }, (_, i) => i),
-              y: Array.from({ length: 7 }, (_, i) => i * 5)
-            }}
-          />
-        </div>
-
-        {/* Controls Container - Now vertically centered */}
-        <div className="bg-background-light rounded-xl p-6 shadow-sm self-center">
-          {/* Example Points Section */}
-          <div className="mb-8">
-            <h3 className="text-h3 text-text-dark mb-4">Example Points</h3>
-            <div className="space-y-2">
-              {POINTS.filter(p => p.type === 'example')
-                .map((point, idx) => renderPointButton(point, idx))}
-            </div>
+      <h2 className="text-2xl font-semibold mb-4">Practice: Plot These Points</h2>
+      <div className="slide-content">
+        <div className="flex flex-col lg:flex-row w-full gap-8 items-center">
+          <div ref={containerRef} className="flex-grow lg:w-2/3 max-w-[70%]">
+            <CoordinatePlane
+              width={dimensions.width}
+              height={dimensions.height}
+              points={POINTS.map(p => p.coordinates)}
+              visiblePoints={new Set([...visiblePoints, ...userAnswers])}
+              fontSize={28}
+            />
           </div>
-          
-          {/* Practice Points Section */}
-          <div>
-            <h3 className="text-h3 text-text-dark mb-4">Practice Questions</h3>
-            <p className="text-text-muted mb-4">
-              Click to identify these points on the graph:
-            </p>
-            <div className="space-y-2">
-              {POINTS.filter(p => p.type === 'practice')
-                .map((point, idx) => renderPointButton(point, 
-                  idx + POINTS.filter(p => p.type === 'example').length))}
+          <div className="lg:w-1/3 flex items-center">
+            <div className="bg-background-light rounded-xl p-5 shadow-sm w-full">
+              <div className="button-group">
+                <h3 className="text-xl font-medium mb-3">Example Points</h3>
+                {POINTS.filter(p => p.type === 'example')
+                  .map((point, idx) => renderButton(point, idx))}
+              </div>
+              
+              <div className="button-group mt-6">
+                <h3 className="text-xl font-medium mb-3">Practice Questions</h3>
+                <p className="text-text-muted mb-3">
+                  Click to identify these points on the graph:
+                </p>
+                {POINTS.filter(p => p.type === 'practice')
+                  .map((point, idx) => renderButton(point, idx + POINTS.filter(p => p.type === 'example').length))}
+              </div>
             </div>
           </div>
         </div>
