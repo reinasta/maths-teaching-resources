@@ -4,6 +4,11 @@
 @tailwind utilities;
 
 :root {
+  /* Font families - maintained from existing CSS */
+  --main-font: 'Fira Sans', sans-serif;
+  --mono-font: 'Fira Code', monospace;
+  
+  /* Colors */
   --primary-color: #0072B2;
   --primary-hover: #005580;
   --background-light: #f8f9fa;
@@ -14,7 +19,7 @@
 
 @layer base {
   body {
-    @apply antialiased text-base text-text-dark bg-white;
+    @apply antialiased text-base text-text-dark bg-white font-sans;
   }
 
   h1 {
@@ -49,17 +54,5 @@
 
   .point-label {
     @apply text-2xl fill-text-dark font-medium;
-  }
-
-  .conversion-button {
-    @apply w-full px-4 py-2 text-lg font-medium 
-           bg-blue-50 border-2 border-primary text-primary
-           rounded-lg transition-all
-           hover:bg-primary hover:text-white
-           active:transform active:translate-y-px;
-  }
-
-  .conversion-button.active {
-    @apply bg-primary text-white;
   }
 }

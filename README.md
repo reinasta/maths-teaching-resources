@@ -1,4 +1,63 @@
 
+## Current project structure
+
+```bash
+remaths git:(main) ✗ tree -I "node_modules" -L 3
+.
+├── README.md
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── src
+│   ├── app
+│   │   ├── components
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── slides
+│   └── components
+│       ├── ConversionGraph
+│       └── CoordinatePlane
+├── tailwind.config.ts
+└── tsconfig.json
+
+9 directories, 18 files
+```
+
+More details about the `src/` file structure:
+
+```bash
+src/
+├── app/
+│   ├── slides/
+│   │   └── conversion/
+│   │       └── page.tsx
+│   └── components/
+│       └── standalone/
+│           ├── conversion-graph/
+│           │   └── page.tsx
+│           └── coordinate-plane/
+│               └── page.tsx
+└── components/
+    ├── ConversionGraph/
+    │   └── index.tsx
+    └── CoordinatePlane/
+        └── index.tsx
+```
+
+
+
+
 ## Next.js setup
 
 This project uses Next.js to generate static mathematics teaching resources. 
