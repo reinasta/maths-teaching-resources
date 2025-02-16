@@ -1,11 +1,6 @@
-//src/components/CoordinatePlane/CoordinatePlane.tsx
+// src/components/CoordinatePlane/CoordinatePlane.tsx
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-
-interface Point {
-  x: number;
-  y: number;
-}
 
 interface CoordinatePlaneProps {
   width?: number;
@@ -13,7 +8,6 @@ interface CoordinatePlaneProps {
   points?: [number, number][];
   visiblePoints?: Set<number>;
   onPointClick?: (index: number) => void;
-  fontSize?: number;
   className?: string;
   gridLines?: {
     x: number[];
@@ -23,6 +17,12 @@ interface CoordinatePlaneProps {
     x: string;
     y: string;
   };
+  margins?: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
 }
 
 const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
@@ -31,7 +31,6 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
   points = [],
   visiblePoints = new Set(),
   onPointClick,
-  fontSize = 32,
   className = '',
   gridLines = {
     x: Array.from({ length: 11 }, (_, i) => i),
@@ -40,6 +39,13 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
   axisLabels = {
     x: 'x',
     y: 'y'
+  },
+  // Increased margins to accommodate larger font sizes
+  margins = {
+    top: 80,    // Increased from 60
+    right: 140,  // Increased from 120
+    bottom: 100, // Increased from 80
+    left: 120    // Increased from 100
   }
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -47,26 +53,19 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
   useEffect(() => {
     if (!svgRef.current) return;
 
-    const margin = {
-      top: 60,
-      right: 120,
-      bottom: 80,
-      left: 100
-    };
-    
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+    const innerWidth = width - margins.left - margins.right;
+    const innerHeight = height - margins.top - margins.bottom;
 
     // Clear previous content
     d3.select(svgRef.current).selectAll('*').remove();
 
-    // Create SVG
     const svg = d3.select(svgRef.current)
       .attr('width', width)
-      .attr('height', height);
+      .attr('height', height)
+      .attr('class', `coordinate-plane ${className}`);
 
     const g = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      .attr('transform', `translate(${margins.left},${margins.top})`);
 
     // Create scales
     const xScale = d3.scaleLinear()
@@ -98,38 +97,32 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('y1', d => yScale(d))
       .attr('y2', d => yScale(d));
 
-    // Add axes with larger font size
+    // Add axes with larger ticks and padding
     const xAxis = d3.axisBottom(xScale)
-      .tickSize(12)
-      .tickPadding(12);
+      .tickSize(8)        // Increased from 6
+      .tickPadding(12);   // Increased from 8
     
     const yAxis = d3.axisLeft(yScale)
-      .tickSize(12)
+      .tickSize(8)
       .tickPadding(12);
 
+    // Add x-axis
     const xAxisGroup = g.append('g')
       .attr('class', 'x-axis')
       .attr('transform', `translate(0,${innerHeight})`)
       .call(xAxis);
 
+    // Add y-axis
     const yAxisGroup = g.append('g')
       .attr('class', 'y-axis')
       .call(yAxis);
 
-    // Update tick font sizes
-    xAxisGroup.selectAll('.tick text')
-      .style('font-size', `${fontSize}px`);
-    
-    yAxisGroup.selectAll('.tick text')
-      .style('font-size', `${fontSize}px`);
-
-    // Add axis labels
+    // Add axis labels with adjusted positioning
     g.append('text')
       .attr('class', 'axis-label')
       .attr('text-anchor', 'middle')
       .attr('x', innerWidth / 2)
-      .attr('y', innerHeight + margin.bottom - 10)
-      .style('font-size', `${fontSize * 1.2}px`)
+      .attr('y', innerHeight + margins.bottom - 20)  // Adjusted for larger font
       .text(axisLabels.x);
 
     g.append('text')
@@ -137,11 +130,10 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
       .attr('x', -innerHeight / 2)
-      .attr('y', -margin.left + 30)
-      .style('font-size', `${fontSize * 1.2}px`)
+      .attr('y', -margins.left + 40)  // Adjusted for larger font
       .text(axisLabels.y);
 
-    // Plot points
+    // Plot points with adjusted spacing for larger labels
     points.forEach((point, index) => {
       if (visiblePoints.has(index)) {
         const pointGroup = g.append('g')
@@ -152,19 +144,19 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
         pointGroup.append('circle')
           .attr('cx', xScale(point[0]))
           .attr('cy', yScale(point[1]))
-          .attr('r', 8)
+          .attr('r', 6)
           .attr('class', 'point')
-          .style('fill', '#0072B2');
+          .style('fill', 'var(--primary-color)');
 
         pointGroup.append('text')
-          .attr('x', xScale(point[0]) + 20)
-          .attr('y', yScale(point[1]) - 20)
+          .attr('x', xScale(point[0]) + 15)  // Increased offset for larger font
+          .attr('y', yScale(point[1]) - 15)   // Increased offset for larger font
           .attr('class', 'point-label')
-          .style('font-size', `${fontSize}px`)
           .text(`(${point[0]}, ${point[1]})`);
       }
     });
-  }, [width, height, points, visiblePoints, fontSize, gridLines, axisLabels, onPointClick]);
+
+  }, [width, height, points, visiblePoints, className, gridLines, axisLabels, margins, onPointClick]);
 
   return (
     <svg 
