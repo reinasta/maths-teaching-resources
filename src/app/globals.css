@@ -46,6 +46,7 @@
 
   .helper-line {
     @apply stroke-primary stroke-[2px];
+    stroke-dasharray: 6 4;  /* This creates the dashed effect: 6px dash, 4px gap */
   }
 
   .axis-label {
