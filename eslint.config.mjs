@@ -13,9 +13,26 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      // Add TypeScript-specific rules
-      "@typescript-eslint/no-unused-vars": "error",
+      // TypeScript-specific rules
+      "@typescript-eslint/no-unused-vars": ["error", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_"
+      }],
       "no-unused-vars": "off",
+
+      // Next.js specific rules
+      "@next/next/no-page-custom-font": "off",
+      "react/no-unescaped-entities": "off",
+
+      // React specific rules
+      "react/prop-types": "off",
+      "react/react-in-jsx-scope": "off",
+
+      // General rules
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "prefer-const": "error",
+      "eqeqeq": ["error", "always"]
     },
   },
 ];
