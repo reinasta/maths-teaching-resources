@@ -151,11 +151,12 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('class', 'point')
       .attr('cx', d => xScale(d[0]))
       .attr('cy', d => yScale(d[1]))
-      .on('click', function(event: MouseEvent, d: [number, number], i: number) {
+      .on('click', (event: Event, d: [number, number]) => {
         if (onPointClick) {
           event.preventDefault();
           event.stopPropagation();
-          onPointClick(i);
+          const index = points.findIndex(p => p[0] === d[0] && p[1] === d[1]);
+          onPointClick(index);
         }
       });
 
