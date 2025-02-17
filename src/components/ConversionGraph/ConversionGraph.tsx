@@ -230,7 +230,7 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => 
       .duration(500)
       .style("opacity", 1);
 
-  }, [dimensions, conversionData, animationKey]);
+  }, [dimensions, conversionData, animationKey, gridConfig.xTicks, gridConfig.yStep]);
 
   return (
     // Remove the extra wrapper div that's adding spacing
