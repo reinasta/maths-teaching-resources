@@ -27,16 +27,16 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
     const margin = {
       top: Math.max(45, height * 0.1),
       right: Math.max(25, width * 0.05),
-      bottom: Math.max(50, height * 0.12), // Increase bottom margin for x-axis label
-      left: Math.max(50, width * 0.1) // Increase left margin for y-axis label
+      bottom: Math.max(50, height * 0.12),
+      left: Math.max(50, width * 0.1)
     };
 
     const baseFontSize = Math.min(width, height) * 0.025;
     
     // Define grid lines
     const gridLines = {
-      x: d3.range(0, 11, 1), // 0 to 10 in steps of 1
-      y: d3.range(0, 31, 5)  // 0 to 30 in steps of 5
+      x: d3.range(0, 11, 1),
+      y: d3.range(0, 31, 5)
     };
 
     // Define axis labels
@@ -92,8 +92,8 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('y2', d => yScale(d));
 
     // Calculate responsive tick sizes
-    const tickSize = Math.min(12, Math.max(6, width * 0.015)); // Between 6-12px
-    const tickPadding = Math.min(12, Math.max(6, width * 0.015)); // Same as tick size
+    const tickSize = Math.min(12, Math.max(6, width * 0.015));
+    const tickPadding = Math.min(12, Math.max(6, width * 0.015));
 
     // Add axes with responsive sizes
     const xAxis = d3.axisBottom(xScale)
@@ -125,7 +125,7 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('class', 'axis-label')
       .attr('text-anchor', 'middle')
       .attr('x', innerWidth / 2)
-      .attr('y', innerHeight + margin.bottom - (baseFontSize / 2)) // Move label up
+      .attr('y', innerHeight + margin.bottom - (baseFontSize / 2))
       .style('font-size', `${baseFontSize * 1.2}px`)
       .text(axisLabels.x);
 
@@ -134,7 +134,7 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
       .attr('x', -innerHeight / 2)
-      .attr('y', -margin.left + (baseFontSize * 2)) // Move label right
+      .attr('y', -margin.left + (baseFontSize * 2))
       .style('font-size', `${baseFontSize * 1.2}px`)
       .text(axisLabels.y);
 
@@ -146,28 +146,34 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('class', 'point-group')
       .style('opacity', (_, i) => visiblePoints.has(i) ? 1 : 0);
 
-    // Add points
+    // Add points with properly typed event handler
     pointGroups.append('circle')
       .attr('class', 'point')
       .attr('cx', d => xScale(d[0]))
       .attr('cy', d => yScale(d[1]))
-      .on('click', (event, _, i) => onPointClick?.(i));
+      .on('click', function(event: MouseEvent, d: [number, number], i: number) {
+        if (onPointClick) {
+          event.preventDefault();
+          event.stopPropagation();
+          onPointClick(i);
+        }
+      });
 
     // Add point labels with dynamic positioning
     pointGroups.append('text')
       .attr('class', 'point-label')
-      .attr('text-anchor', d => d[0] === 0 ? 'start' : 'middle') // Left align only for x=0 points
+      .attr('text-anchor', d => d[0] === 0 ? 'start' : 'middle')
       .attr('x', d => {
         if (d[0] === 0) {
-          return xScale(d[0]) + baseFontSize // Right of point for x=0
+          return xScale(d[0]) + baseFontSize
         }
-        return xScale(d[0]) // Center on point for all others
+        return xScale(d[0])
       })
       .attr('y', d => {
         if (d[0] === 0) {
-          return yScale(d[1]) - baseFontSize // Default position for x=0
+          return yScale(d[1]) - baseFontSize
         }
-        return yScale(d[1]) - baseFontSize * 1.5 // Higher above point for all others
+        return yScale(d[1]) - baseFontSize * 1.5
       })
       .style('font-size', `${baseFontSize}px`)
       .text(d => `(${d[0]}, ${d[1]})`);
@@ -179,7 +185,7 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       ref={svgRef}
       className={`coordinate-plane ${className}`}
       aria-label="Coordinate plane with plotted points"
-      style={{ aspectRatio: '1.15' }} // Maintain 1.15:1 aspect ratio
+      style={{ aspectRatio: '1.15' }}
     />
   );
 };
