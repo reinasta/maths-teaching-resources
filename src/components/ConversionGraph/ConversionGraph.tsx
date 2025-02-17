@@ -6,21 +6,33 @@ interface ConversionGraphProps {
   className?: string;
 }
 
+// Define the type for conversion direction
+type ConversionDirection = 'inches' | 'cm';
+
+// Define the interface for conversion data
+interface ConversionData {
+  x: number;
+  y: number;
+  direction: ConversionDirection;
+}
+
 const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [animationKey, setAnimationKey] = useState(0);
-  const [conversionData, setConversionData] = useState({
+  const [conversionData, setConversionData] = useState<ConversionData>({
     x: 2,
     y: 5,
-    direction: 'inches' as const
+    direction: 'inches'
   });
 
-    const handleConversionClick = useCallback((inches: number, cm: number, direction: 'inches' | 'cm') => {
+  const handleConversionClick = useCallback((inches: number, cm: number, direction: ConversionDirection) => {
     setConversionData({ x: inches, y: cm, direction });
     setAnimationKey(prev => prev + 1);
   }, []);
+
+  // Rest of your component code remains the same...
 
   // Calculate dimensions based on container size
   const updateDimensions = useCallback(() => {
