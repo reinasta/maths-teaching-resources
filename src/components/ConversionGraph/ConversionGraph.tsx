@@ -1,71 +1,71 @@
 // src/components/ConversionGraph/ConversionGraph.tsx
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
 
 interface ConversionGraphProps {
-  width?: number;
-  height?: number;
-  fontSize?: number;
   className?: string;
 }
 
-interface ConversionData {
-  x: number;
-  y: number;
-  direction: 'inches' | 'cm';
-}
-
-const ConversionGraph: React.FC<ConversionGraphProps> = ({
-  width = 900,
-  height = 700,
-  fontSize = 32,
-  className = ''
-}) => {
+const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [animationKey, setAnimationKey] = useState(0);
-  const [dimensions, setDimensions] = useState({ width, height });
-  const [conversionData, setConversionData] = useState<ConversionData>({
+  const [conversionData, setConversionData] = useState({
     x: 2,
     y: 5,
-    direction: 'inches'
+    direction: 'inches' as const
   });
 
-  // Handle resize
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        setDimensions({
-          width: containerWidth,
-          height: Math.min(containerWidth * 0.75, window.innerHeight * 0.85)
-        });
-      }
-    };
+    const handleConversionClick = useCallback((inches: number, cm: number, direction: 'inches' | 'cm') => {
+    setConversionData({ x: inches, y: cm, direction });
+    setAnimationKey(prev => prev + 1);
+  }, []);
 
+  // Calculate dimensions based on container size
+  const updateDimensions = useCallback(() => {
+    if (containerRef.current) {
+      const container = containerRef.current;
+      const width = container.clientWidth;
+      // Adjust height calculation based on screen width
+      const heightRatio = window.innerWidth <= 480 ? 0.850 : 0.75; // 10% increase for phones
+      const height = width * heightRatio;
+      setDimensions({ width, height });
+    }
+  }, []);
+
+  // Initialize dimensions and handle resize
+  useEffect(() => {
     updateDimensions();
+
     const resizeObserver = new ResizeObserver(updateDimensions);
-    
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
 
     return () => resizeObserver.disconnect();
-  }, []);
+  }, [updateDimensions]);
 
-  // D3 rendering
+  const gridConfig = useMemo(() => ({
+      xTicks: 10,
+      yTicks: 5,
+      xStep: 1,
+      yStep: 5
+  }), []);
+
+  // D3 rendering with responsive considerations
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || dimensions.width === 0) return;
 
-    const margin = { 
-      top: 50, 
-      right: 100, 
-      bottom: 70, 
-      left: 120 
+    // Calculate responsive margins and font sizes
+    const margin = {
+      top: Math.max(40, dimensions.height * 0.1),
+      right: Math.max(20, dimensions.width * 0.05),
+      bottom: Math.max(40, dimensions.height * 0.1),
+      left: Math.max(40, dimensions.width * 0.08)
     };
-    
-    const innerWidth = dimensions.width - margin.left - margin.right;
-    const innerHeight = dimensions.height - margin.top - margin.bottom;
+
+    const baseFontSize = Math.min(dimensions.width, dimensions.height) * 0.025;
 
     // Clear previous content
     d3.select(svgRef.current).selectAll("*").remove();
@@ -73,9 +73,9 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({
     // Set up SVG with viewBox
     const svg = d3.select(svgRef.current)
       .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet")
       .style("width", "100%")
-      .style("height", "auto")
-      .style("aspect-ratio", `${dimensions.width}/${dimensions.height}`);
+      .style("height", "auto");
 
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -83,32 +83,11 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({
     // Create scales
     const xScale = d3.scaleLinear()
       .domain([0, 10])
-      .range([0, innerWidth]);
+      .range([0, dimensions.width - margin.left - margin.right]);
 
     const yScale = d3.scaleLinear()
       .domain([0, 25])
-      .range([innerHeight, 0]);
-
-    // Add grid
-    g.selectAll("vertical-grid")
-      .data(d3.range(0, 11))
-      .enter()
-      .append("line")
-      .attr("class", "grid-line")
-      .attr("x1", d => xScale(d))
-      .attr("x2", d => xScale(d))
-      .attr("y1", 0)
-      .attr("y2", innerHeight);
-
-    g.selectAll("horizontal-grid")
-      .data(d3.range(0, 26, 5))
-      .enter()
-      .append("line")
-      .attr("class", "grid-line")
-      .attr("x1", 0)
-      .attr("x2", innerWidth)
-      .attr("y1", d => yScale(d))
-      .attr("y2", d => yScale(d));
+      .range([dimensions.height - margin.top - margin.bottom, 0]);
 
     // Add axes
     const xAxis = d3.axisBottom(xScale);
@@ -116,37 +95,62 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({
 
     const xAxisGroup = g.append("g")
       .attr("class", "x-axis")
-      .attr("transform", `translate(0,${innerHeight})`)
+      .attr("transform", `translate(0,${dimensions.height - margin.top - margin.bottom})`)
       .call(xAxis);
 
     const yAxisGroup = g.append("g")
       .attr("class", "y-axis")
       .call(yAxis);
 
-    // Update tick font sizes
     xAxisGroup.selectAll('.tick text')
-      .style('font-size', `${fontSize}px`);
+      .style('font-size', `${baseFontSize}px`);
     
     yAxisGroup.selectAll('.tick text')
-      .style('font-size', `${fontSize}px`);
+      .style('font-size', `${baseFontSize}px`);
 
-    // Add axis labels
+    // Add axis labels with adjusted positions
     g.append("text")
       .attr("class", "axis-label")
       .attr("text-anchor", "middle")
-      .attr("x", innerWidth / 2)
-      .attr("y", innerHeight + margin.bottom - 10)
-      .style('font-size', `${fontSize}px`)
+      .attr("x", (dimensions.width - margin.left - margin.right) / 2)
+      .attr("y", dimensions.height - margin.top - margin.bottom + baseFontSize * 4)
+      .style('font-size', `${baseFontSize}px`)
       .text("inches");
 
     g.append("text")
       .attr("class", "axis-label")
       .attr("text-anchor", "middle")
       .attr("transform", "rotate(-90)")
-      .attr("x", -innerHeight / 2)
-      .attr("y", -margin.left + 45)
-      .style('font-size', `${fontSize}px`)
+      .attr("x", -(dimensions.height - margin.top - margin.bottom) / 2)
+      .attr("y", -margin.left + baseFontSize)
+      .style('font-size', `${baseFontSize}px`)
       .text("centimetres");
+
+    // Add grid
+    // Vertical grid lines
+    g.selectAll(".vertical-grid")
+      .data(d3.range(0, gridConfig.xTicks + 1))
+      .enter()
+      .append("line")
+      .attr("class", "grid-line")
+      .attr("x1", d => xScale(d))
+      .attr("x2", d => xScale(d))
+      .attr("y1", 0)
+      .attr("y2", dimensions.height - margin.top - margin.bottom);
+
+    // Horizontal grid lines
+    g.selectAll(".horizontal-grid")
+      .data(d3.range(0, 26, gridConfig.yStep))
+      .enter()
+      .append("line")
+      .attr("class", "grid-line")
+      .attr("x1", 0)
+      .attr("x2", dimensions.width - margin.left - margin.right)
+      .attr("y1", d => yScale(d))
+      .attr("y2", d => yScale(d));
+
+    // Ensure grid lines are behind other elements
+    g.selectAll(".grid-line").lower();
 
     // Draw conversion line
     g.append("line")
@@ -226,18 +230,14 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({
       .duration(500)
       .style("opacity", 1);
 
-  }, [dimensions, fontSize, animationKey, conversionData]);
-
-  const handleConversionClick = (inches: number, cm: number, direction: 'inches' | 'cm') => {
-    setConversionData({ x: inches, y: cm, direction });
-    setAnimationKey(prev => prev + 1);
-  };
+  }, [dimensions, conversionData, animationKey]);
 
   return (
-    <div className="flex flex-col lg:flex-row w-full gap-8 items-center">
+    // Remove the extra wrapper div that's adding spacing
+    <div className="conversion-layout">
       <div 
         ref={containerRef} 
-        className="flex-grow lg:w-2/3 max-w-[70%] relative"
+        className="graph-container"
       >
         <svg 
           ref={svgRef}
@@ -245,51 +245,50 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({
           aria-label="Conversion graph between inches and centimetres"
         />
       </div>
-      <div className="lg:w-1/3 flex items-center">
-        <div className="bg-background-light rounded-xl p-5 shadow-sm w-full">
-          <div className="button-group">
-            <h3 className="text-xl font-medium mb-3">Inches to Centimetres</h3>
-            <button 
-              className="conversion-button" 
-              onClick={() => handleConversionClick(2, 5, 'inches')}
-            >
-              2 inches → 5 cm
-            </button>
-            <button 
-              className="conversion-button"
-              onClick={() => handleConversionClick(4, 10, 'inches')}
-            >
-              4 inches → 10 cm
-            </button>
-            <button 
-              className="conversion-button"
-              onClick={() => handleConversionClick(8, 20, 'inches')}
-            >
-              8 inches → 20 cm
-            </button>
-          </div>
-          
-          <div className="button-group mt-6">
-            <h3 className="text-xl font-medium mb-3">Centimetres to Inches</h3>
-            <button 
-              className="conversion-button"
-              onClick={() => handleConversionClick(2, 5, 'cm')}
-            >
-              5 cm → 2 inches
-            </button>
-            <button 
-              className="conversion-button"
-              onClick={() => handleConversionClick(4, 10, 'cm')}
-            >
-              10 cm → 4 inches
-            </button>
-            <button 
-              className="conversion-button"
-              onClick={() => handleConversionClick(8, 20, 'cm')}
-            >
-              20 cm → 8 inches
-            </button>
-          </div>
+      <div className="controls-container">
+        {/* Reduce margin between button groups */}
+        <div className="button-group" style={{ marginBottom: '0.5rem' }}>
+          <h3 style={{ marginBottom: '0.25rem' }}>Inches to Centimetres</h3>
+          <button 
+            className="conversion-button" 
+            onClick={() => handleConversionClick(2, 5, 'inches')}
+          >
+            2 inches → 5 cm
+          </button>
+          <button 
+            className="conversion-button"
+            onClick={() => handleConversionClick(4, 10, 'inches')}
+          >
+            4 inches → 10 cm
+          </button>
+          <button 
+            className="conversion-button"
+            onClick={() => handleConversionClick(8, 20, 'inches')}
+          >
+            8 inches → 20 cm
+          </button>
+        </div>
+        
+        <div className="button-group" style={{ marginBottom: '0' }}>
+          <h3 style={{ marginBottom: '0.25rem' }}>Centimetres to Inches</h3>
+           <button 
+            className="conversion-button"
+            onClick={() => handleConversionClick(2, 5, 'cm')}
+          >
+            5 cm → 2 inches
+          </button>
+          <button 
+            className="conversion-button"
+            onClick={() => handleConversionClick(4, 10, 'cm')}
+          >
+            10 cm → 4 inches
+          </button>
+          <button 
+            className="conversion-button"
+            onClick={() => handleConversionClick(8, 20, 'cm')}
+          >
+            20 cm → 8 inches
+          </button>
         </div>
       </div>
     </div>

@@ -94,35 +94,37 @@ const PlottingPointsSection: React.FC = () => {
   };
 
   return (
-    <section className="w-full">
-      <h2 className="text-2xl font-semibold mb-4">Practice: Plot These Points</h2>
-      <div className="slide-content">
-        <div className="flex flex-col lg:flex-row w-full gap-8 items-center">
-          <div ref={containerRef} className="flex-grow lg:w-2/3 max-w-[70%]">
+    <section className="w-full px-4">
+      <h2 className="text-2xl font-semibold mb-4 text-center lg:text-left">
+        Practice: Plot These Points
+      </h2>
+      <div className="conversion-wrapper">
+        <div className="conversion-layout">
+          <div 
+            ref={containerRef} 
+            className="graph-container"
+          >
             <CoordinatePlane
               width={dimensions.width}
               height={dimensions.height}
               points={POINTS.map(p => p.coordinates)}
               visiblePoints={new Set([...visiblePoints, ...userAnswers])}
-              fontSize={28}
             />
           </div>
-          <div className="lg:w-1/3 flex items-center">
-            <div className="bg-background-light rounded-xl p-5 shadow-sm w-full">
-              <div className="button-group">
-                <h3 className="text-xl font-medium mb-3">Example Points</h3>
-                {POINTS.filter(p => p.type === 'example')
-                  .map((point, idx) => renderButton(point, idx))}
-              </div>
-              
-              <div className="button-group mt-6">
-                <h3 className="text-xl font-medium mb-3">Practice Questions</h3>
-                <p className="text-text-muted mb-3">
-                  Click to identify these points on the graph:
-                </p>
-                {POINTS.filter(p => p.type === 'practice')
-                  .map((point, idx) => renderButton(point, idx + POINTS.filter(p => p.type === 'example').length))}
-              </div>
+          <div className="controls-container">
+            <div className="button-group">
+              <h3>Example Points</h3>
+              {POINTS.filter(p => p.type === 'example')
+                .map((point, idx) => renderButton(point, idx))}
+            </div>
+            
+            <div className="button-group">
+              <h3>Practice Questions</h3>
+              <p className="text-text-muted mb-3">
+                Click to identify these points on the graph:
+              </p>
+              {POINTS.filter(p => p.type === 'practice')
+                .map((point, idx) => renderButton(point, idx + POINTS.filter(p => p.type === 'example').length))}
             </div>
           </div>
         </div>

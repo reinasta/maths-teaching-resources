@@ -15,6 +15,7 @@
   --text-dark: #333;
   --text-muted: #555;
   --border-color: #ccc;
+  --button-text-size: 1rem; /* Default button text size */
 }
 
 @layer base {
@@ -37,15 +38,18 @@
 
 @layer components {
   .grid-line {
-    @apply stroke-gray-200 stroke-[1px];
+    @apply stroke-gray-300;
+    stroke-width: max(0.05rem, min(0.1rem, calc(100vw * 0.0008))); /* Responsive stroke width */
   }
 
   .conversion-line {
-    @apply stroke-primary stroke-[3px];
+    @apply stroke-primary;
+    stroke-width: max(0.15rem, min(0.3rem, calc(100vw * 0.0024))); /* Responsive stroke width */
   }
 
   .helper-line {
-    @apply stroke-primary stroke-[2px];
+    @apply stroke-primary;
+    stroke-width: max(0.1rem, min(0.2rem, calc(100vw * 0.0016))); /* Responsive stroke width */
     stroke-dasharray: 6 4;  /* This creates the dashed effect: 6px dash, 4px gap */
   }
 
@@ -56,6 +60,20 @@
   .point-label {
     @apply text-2xl fill-text-dark font-medium;
   }
+
+  /* Add responsive point styles */
+  .point {
+    r: clamp(4px, 0.8vw, 6px); /* Base point size */
+    fill: var(--primary-color);
+    stroke: white;
+    stroke-width: clamp(1px, 0.2vw, 2px);
+    cursor: pointer;
+  }
+
+  .point:hover {
+    r: clamp(5px, 1vw, 7px);
+    fill: var(--primary-hover);
+  }
 }
 
 /* style the control panel */
@@ -65,27 +83,66 @@
   gap: 2rem;
   align-items: center;
   padding: 1rem 0;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  max-width: 1200px; /* Prevent graph from getting too large */
+  /* Add responsive padding */
+  @media (max-width: 480px) {
+    gap: 1rem;
+    padding: 0.5rem 0;
+  }
 }
 
 .conversion-controls {
   padding: 1.25rem;
   background-color: var(--background-light);
   border-radius: 12px;
-  width: 40%;
+  max-width: 40%; /* Use max-width instead of width */
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex: 1 1 100%; /* Allow full width on smaller screens */
 }
 
+/* Update the controls-container class */
+.controls-container {
+  width: 100%;
+  max-width: 400px; /* Control max-width of control panel */
+  padding: clamp(0.75rem, 2vw, 1.5rem); /* Responsive padding */
+  background-color: var(--background-light);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    max-width: 100%; /* Allow controls to expand full width */
+  }
+}
+
+/* Update the button-group class */
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem); /* Responsive gap */
+  margin-bottom: clamp(1rem, 2vw, 1.75rem); /* Responsive margin */
+  
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.button-group h3 {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  margin-bottom: 0.5rem;
 }
 
 .conversion-button {
   font-family: var(--main-font);
-  font-size: var(--button-text-size);
-  padding: 0.6rem 1.2rem;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1.2rem);
   background-color: #e3f2fd;
   border: 2px solid var(--primary-color);
   border-radius: 8px;
@@ -96,6 +153,7 @@
   width: 100%;
   white-space: nowrap;
   font-weight: 500;
+  min-height: 2.5rem;
 }
 
 .conversion-button:hover {
@@ -108,3 +166,204 @@
   background-color: var(--primary-color);
   color: white;
 }
+
+/* Add this to your global styles */
+.conversion-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 2rem);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Update the conversion-layout class */
+.conversion-layout {
+  display: flex;
+  flex-direction: column; /* Default to vertical layout */
+  align-items: center; /* Default alignment for all screens */
+  gap: clamp(1rem, 3vw, 2rem); /* Reduce from original */
+  width: 100%;
+  
+  @media (max-width: 1024px) {
+    align-items: flex-start; /* Align to the start when stacked */
+    gap: 1rem; /* Reduce gap when stacked */
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.25rem; /* Significantly reduce gap on mobile */
+  }
+}
+
+@media (min-width: 1024px) {
+  .conversion-layout {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+  }
+
+  .graph-container {
+    flex: 3;
+  }
+
+  .controls-container {
+    flex: 1;
+    transform: scale(0.95); /* Slightly smaller on large screens */
+  }
+}
+
+/* Update the media queries */
+@media (max-width: 1023px) {
+  .controls-container {
+    transform: scale(0.9); /* More compact on medium screens */
+  }
+
+  .conversion-wrapper {
+    gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  }
+
+  .conversion-layout {
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .graph-container {
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .conversion-controls {
+    max-width: 100%; /* Full width on smaller screens */
+  }
+
+  .axis-label {
+    font-size: 1.5rem; /* Adjust axis label font size */
+  }
+
+  .point-label {
+    font-size: 1.5rem; /* Adjust point label font size */
+  }
+
+  .conversion-button {
+    font-size: 0.9rem; /* Adjust button text size */
+    padding: 0.4rem 0.8rem;
+  }
+
+  .grid-line {
+    @apply stroke-gray-400; /* Slightly darker on small screens */
+  }
+
+  .conversion-layout {
+    gap: clamp(0.5rem, 2vw, 1rem); /* Smaller gap on mobile */
+  }
+
+  .controls-container {
+    padding: clamp(0.5rem, 1.5vw, 1rem);
+    transform: scale(0.85); /* Even more compact on small screens */
+  }
+
+  .button-group {
+    gap: clamp(0.25rem, 1vw, 0.5rem);
+    margin-bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+  }
+
+  .conversion-wrapper {
+    gap: 1rem;
+  }
+
+  .graph-container {
+    margin-bottom: 0; /* Remove any bottom margin */
+    padding: 0.5rem 0; /* Reduce padding */
+  }
+
+  .coordinate-plane {
+    max-height: 70vh;
+  }
+  
+  .point-label {
+    font-size: clamp(0.75rem, 2vw, 1rem);
+  }
+  
+  .axis-label {
+    font-size: clamp(0.875rem, 2.5vw, 1.25rem);
+  }
+
+  .point {
+    r: clamp(3px, 0.6vw, 4px); /* Smaller on tablets */
+    stroke-width: clamp(0.5px, 0.15vw, 1px);
+  }
+
+  .point:hover {
+    r: clamp(4px, 0.8vw, 5px);
+  }
+
+  .x-axis .tick line,
+  .y-axis .tick line {
+    stroke-width: clamp(0.5px, 0.08vw, 0.75px);
+  }
+}
+
+@media (max-width: 480px) {
+  .controls-container {
+    padding: 0.75rem;
+    transform: scale(0.8); /* Most compact on mobile */
+  }
+
+  .conversion-layout {
+    gap: 0.5rem; /* Minimum gap on very small screens */
+  }
+
+  .button-group {
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .conversion-wrapper {
+    gap: 0.75rem;
+  }
+
+  .graph-container {
+    padding: 0.25rem 0;
+  }
+
+  .coordinate-plane {
+    max-height: 50vh;
+  }
+  
+  .point-label {
+    font-size: clamp(0.625rem, 1.75vw, 0.875rem);
+  }
+  
+  .axis-label {
+    font-size: clamp(0.75rem, 2vw, 1rem);
+  }
+
+  .point {
+    r: clamp(2px, 0.5vw, 3px); /* Smallest on phones */
+    stroke-width: clamp(0.5px, 0.1vw, 1px);
+  }
+
+  .point:hover {
+    r: clamp(3px, 0.7vw, 4px);
+  }
+
+  .x-axis .tick line,
+  .y-axis .tick line {
+    stroke-width: 0.5px;
+  }
+}
+
+.coordinate-plane {
+  width: 100%;
+  height: auto;
+  max-height: 85vh;
+  aspect-ratio: 1.15;
+}
+
+/* Add responsive tick styles */
+.x-axis .tick line,
+.y-axis .tick line {
+  stroke-width: clamp(0.5px, 0.1vw, 1px);
+}
+

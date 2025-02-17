@@ -44,12 +44,8 @@ export default function ConversionGraphPage() {
         Explore the relationship between inches and centimetres using this interactive conversion graph.
       </p>
       
-      <div ref={containerRef} className="w-full">
-        <ConversionGraph
-          width={dimensions.width}
-          height={dimensions.height}
-          fontSize={28}
-        />
+      <div className="container mx-auto px-4">
+        <ConversionGraph/>
       </div>
 
       <div className="mt-8 p-6 bg-gray-50 rounded-lg">

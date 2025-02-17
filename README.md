@@ -1,6 +1,8 @@
+# Mathematics Teaching Resources - Conversion Graphs
 
+An interactive web application for teaching mathematical concepts through dynamic visualisations, focusing on unit conversions and coordinate geometry. Built with Next.js for static site generation and React for interactive components.
 
-## Current project structure
+## Current Project Structure
 
 ```bash
 remaths git:(main) ✗ tree -I "node_modules" -L 3
@@ -147,10 +149,6 @@ This transition is expected to proceed incrementally, ensuring that existing fun
 ---
 *Note: This transition plan was added on February 16, 2025, to document the planned structural changes to the project.*
 
-
-# Mathematics Teaching Resources - Conversion Graphs
-
-An interactive web application for teaching mathematical concepts through dynamic visualizations, focusing on unit conversions and coordinate geometry. Built with RevealJS for presentations and React for interactive components.
 
 # Project structure
 
