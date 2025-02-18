@@ -1,8 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import React, { useState } from 'react';
 import Prism from '@/components/Prism/Prism';
 import PrismControls from './PrismControls';
 import { PrismDimensions } from './types';

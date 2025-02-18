@@ -1,5 +1,5 @@
 // src/components/PrismControls/PrismControls.tsx
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
 interface PrismDimensions {
   sideA: number;
@@ -35,13 +35,13 @@ const PrismControls: React.FC<PrismControlsProps> = ({
     onUnfoldChange(newUnfoldState);
   };
 
-  const calculateTriangleHeight = useCallback((a: number, b: number, c: number): number => {
-    // Using Heron's formula
-    const s = (a + b + c) / 2; // semi-perimeter
-    const area = Math.sqrt(s * (s - a) * (s - b) * (s - c));
-    const base = Math.max(a, b, c); // Use longest side as base
-    return (2 * area) / base;
-  }, []);
+  //const calculateTriangleHeight = useCallback((a: number, b: number, c: number): number => {
+  //  // Using Heron's formula
+  //  const s = (a + b + c) / 2; // semi-perimeter
+  //  const area = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+  //  const base = Math.max(a, b, c); // Use longest side as base
+  //  return (2 * area) / base;
+  //}, []);
 
   const handleInputChange = (key: keyof PrismDimensions) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
