@@ -67,6 +67,21 @@ export default function Home() {
                   Interactive coordinate system for plotting points
                 </p>
               </Link>
+
+              <Link
+                href="/components/standalone/prism"
+                className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+              >
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  3D Prism{' '}
+                  <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                    -&gt;
+                  </span>
+                </h3>
+                <p className="text-gray-600">
+                  Explore an interactive 3D triangular prism with annotations and transformations.
+                </p>
+              </Link>
             </div>
           </section>
         </div>

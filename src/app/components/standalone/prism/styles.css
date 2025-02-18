@@ -1,0 +1,61 @@
+.annotation {
+  pointer-events: none;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #000;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.dimension-control {
+  @apply flex items-center gap-4;
+}
+
+.dimension-control label {
+  @apply w-24 text-sm text-gray-600;
+}
+
+.dimension-control input[type="range"] {
+  @apply flex-1;
+}
+
+@media (max-width: 768px) {
+  .prism-layout {
+    @apply flex flex-col gap-6;
+  }
+}
+
+@media (min-width: 769px) {
+  .prism-layout {
+    @apply grid grid-cols-[2fr,1fr] gap-8 items-start;
+  }
+}
+
+.conversion-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.visualization-container {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
+}
+
+.controls-container {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .conversion-layout {
+    grid-template-columns: 1fr;
+  }
+}
