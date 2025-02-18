@@ -29,7 +29,7 @@ export default function Home() {
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
                   Unit Conversion Graphs
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 leading-relaxed">
                   Learn how to convert between different units using coordinate graphs
                 </p>
               </Link>
@@ -50,7 +50,7 @@ export default function Home() {
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
                   Conversion Graph Tool
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 leading-relaxed">
                   Interactive tool for exploring unit conversions
                 </p>
               </Link>
@@ -63,22 +63,20 @@ export default function Home() {
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
                   Coordinate Plane
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 leading-relaxed">
                   Interactive coordinate system for plotting points
                 </p>
               </Link>
 
               <Link
                 href="/components/standalone/prism"
-                className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+                className="block p-6 bg-white border border-gray-200 rounded-lg 
+                         hover:border-primary hover:shadow-md transition-all"
               >
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
-                  3D Prism{' '}
-                  <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                    -&gt;
-                  </span>
+                  3D Prism
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 leading-relaxed">
                   Explore an interactive 3D triangular prism with annotations and transformations.
                 </p>
               </Link>

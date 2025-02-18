@@ -82,9 +82,10 @@
   width: 100%;
   gap: 2rem;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1rem 0 2rem; /* Increased bottom padding */
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
   max-width: 1200px; /* Prevent graph from getting too large */
+  margin-bottom: 1rem; /* Added margin bottom */
   /* Add responsive padding */
   @media (max-width: 480px) {
     gap: 1rem;
@@ -109,6 +110,10 @@
   background-color: var(--background-light);
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Add this for vertical centering */
+  margin: auto 0; /* Add this to help with vertical centering */
 
   @media (max-width: 480px) {
     padding: 0.75rem;
@@ -175,6 +180,7 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 1rem;
 }
 
 /* Update the conversion-layout class */
@@ -182,6 +188,8 @@
   display: flex;
   flex-direction: column; /* Default to vertical layout */
   align-items: center; /* Default alignment for all screens */
+  justify-content: center; /* Add this for vertical centering */
+  min-height: 100%; /* Ensure full height for centering */
   gap: clamp(1rem, 3vw, 2rem); /* Reduce from original */
   width: 100%;
   
@@ -201,6 +209,7 @@
     align-items: center;
     justify-content: center;
     gap: 3rem;
+    min-height: 100%; /* Maintain full height */
   }
 
   .graph-container {
@@ -357,13 +366,211 @@
 .coordinate-plane {
   width: 100%;
   height: auto;
-  max-height: 85vh;
-  aspect-ratio: 1.15;
+  max-height: 80vh; /* Reduced from 85vh */
+  aspect-ratio: 1.25; /* Increased from 1.15 to give more vertical space */
 }
 
 /* Add responsive tick styles */
 .x-axis .tick line,
 .y-axis .tick line {
   stroke-width: clamp(0.5px, 0.1vw, 1px);
+}
+
+/* Add this rule to ensure slides use the main font */
+.reveal {
+  font-family: var(--main-font);
+  font-size: clamp(24px, 2.5vw, 32px); /* Increased base font size */
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+/* Headings with slide-appropriate sizes */
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  font-family: var(--main-font);
+  text-transform: none;
+  text-shadow: none;
+  color: var(--text-dark);
+  text-align: center;
+}
+
+.reveal h1 {
+  font-size: clamp(56px, 6vw, 84px);
+  font-weight: 700;
+  margin: 0; /* Remove margin for better centering */
+}
+
+.reveal h2 {
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 600;
+  margin-bottom: 0.8em;
+}
+
+.reveal h3 {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 500;
+  margin-bottom: 0.6em;
+}
+
+/* Slide content styling */
+.reveal p {
+  font-size: clamp(24px, 2vw, 32px);
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin-bottom: 0.8em;
+}
+
+.reveal ul {
+  @apply list-disc list-inside space-y-6;
+}
+
+.reveal li {
+  font-size: clamp(24px, 2vw, 32px);
+  line-height: 1.4;
+  color: var(--text-dark);
+}
+
+/* Center content in standard slides */
+.reveal .slide-content {
+  text-align: center;
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+/* Left-align text in key words lists */
+.reveal .key-words {
+  @apply text-left space-y-6;
+  font-size: clamp(24px, 2vw, 32px);
+  margin-top: 1em;
+}
+
+.reveal .key-words li {
+  @apply text-left;
+  font-size: clamp(24px, 2vw, 32px);
+  line-height: 1.4;
+}
+
+/* Ensure component slides maintain their layout */
+.reveal .conversion-layout {
+  /* Existing conversion-layout styles remain unchanged */
+}
+
+/* Center title slide content vertically */
+.reveal section:first-of-type .slide-content {
+  position: static; /* Remove absolute positioning */
+  transform: none; /* Remove transform */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0; /* Remove padding to prevent cutoff */
+}
+
+/* Improve heading spacing and sizes */
+.reveal h1 {
+  font-size: clamp(56px, 6vw, 84px);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1em;
+}
+
+.reveal h2 {
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.8em;
+}
+
+.reveal h3 {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 0.6em;
+}
+
+/* Add specific styles for control panel headings */
+.reveal .controls-container h3,
+.reveal .button-group h3 {
+  font-size: clamp(16px, 1.75vw, 20px);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  text-align: left;
+}
+
+/* Update control panel text styles */
+.reveal .controls-container p,
+.reveal .button-group p {
+  font-size: clamp(14px, 1.5vw, 16px);
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.reveal section:first-of-type p {
+  font-size: clamp(28px, 2.5vw, 36px);
+  margin: 0; /* Remove margin for better centering */
+  color: var(--text-muted);
+}
+
+/* First, set the base reveal styles */
+.reveal {
+  font-family: var(--main-font);
+  font-size: clamp(24px, 2.5vw, 32px);
+}
+
+/* Title slide specific styles */
+.reveal section:first-of-type {
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reveal section:first-of-type > .slide-content {
+  position: static;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0;
+}
+
+.reveal section:first-of-type > .slide-content > h1 {
+  font-size: clamp(56px, 6vw, 84px);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.reveal section:first-of-type > .slide-content > p {
+  font-size: clamp(28px, 2.5vw, 36px);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* Control panel specific styles - make these very specific */
+.reveal .controls-container p,
+.reveal .button-group p,
+.reveal section .controls-container p,
+.reveal section .button-group p {
+  font-size: clamp(14px, 1.5vw, 16px) !important; /* Use !important only if needed */
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+/* Control panel headings */
+.reveal .controls-container h3,
+.reveal .button-group h3,
+.reveal section .controls-container h3,
+.reveal section .button-group h3 {
+  font-size: clamp(16px, 1.75vw, 20px);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  text-align: left;
 }
 
