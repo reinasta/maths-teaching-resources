@@ -1,27 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useEffect } from 'react';
 import ConversionGraph from '@/components/ConversionGraph/ConversionGraph';
 import PlottingPointsSection from '@/components/PlottingPointsSection';
-
-// Import only the type
-import type Reveal from 'reveal.js';
 
 // Move CSS import before dynamic import
 import 'reveal.js/dist/reveal.css';
 
-// Dynamically import Reveal.js
-const RevealJS = dynamic(
-  () => import('reveal.js').then((Reveal) => Reveal),
-  { ssr: false }
-);
-
 export default function ConversionSlidesPage() {
-  const [isClient, setIsClient] = useState(false);
-
   useEffect(() => {
-    setIsClient(true);
     // Initialize Reveal.js only after component mounts
     if (typeof window !== 'undefined') {
       const initializeReveal = async () => {
@@ -47,7 +34,6 @@ export default function ConversionSlidesPage() {
     }
   }, []);
 
-  // Rest of your component remains the same
   return (
     <div className="reveal" style={{ fontFamily: 'var(--main-font)' }}>
       <div className="slides conversion-wrapper">
