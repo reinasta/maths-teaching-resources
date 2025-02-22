@@ -58,7 +58,25 @@ src/
         └── index.tsx
 ```
 
+Media files (videos, images) are held in the following directory structure
 
+```bash
+remaths/
+├── public/
+│   ├── static/
+│   │   ├── diagrams/      # Mathematical diagrams
+│   │   ├── icons/         # UI icons
+│   │   └── thumbnails/    # Slide previews
+│   └── videos/
+│       └── tutorials/      # Math concept videos
+|       └── videos/         # Videos
+|       └── components/     # Component-specific videos
+└── src/
+    └── assets/
+        └── images/
+            ├── slides/     # Slide-specific images
+            └── components/ # Component-specific graphics
+```
 
 
 ## Next.js setup

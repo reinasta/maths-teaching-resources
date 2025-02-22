@@ -80,6 +80,19 @@ export default function Home() {
                   Explore an interactive 3D triangular prism with annotations and transformations.
                 </p>
               </Link>
+
+              <Link
+                href="/components/standalone/enlargement"
+                className="block p-6 bg-white border border-gray-200 rounded-lg 
+                         hover:border-primary hover:shadow-md transition-all"
+              >
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  Enlargement
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Watch video demonstrations about enlargement and scale factors
+                </p>
+              </Link>
             </div>
           </section>
         </div>
