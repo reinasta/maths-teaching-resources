@@ -5,6 +5,7 @@ import Prism from '@/components/Prism/Prism';
 import PrismControls from './PrismControls';
 import { PrismDimensions } from './types';
 import { usePrismCalculations } from './hooks/usePrismCalculations';
+import StandaloneLayout from '@/components/StandaloneLayout';
 import './styles.css';
 
 const PrismPage: React.FC = () => {
@@ -19,7 +20,7 @@ const PrismPage: React.FC = () => {
   const calculations = usePrismCalculations(dimensions);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <StandaloneLayout>
       <h1 className="text-3xl font-bold mb-6">Triangular Prism Visualization</h1>
       <div className="conversion-layout">
         <div className="visualization-container">
@@ -37,7 +38,7 @@ const PrismPage: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </StandaloneLayout>
   );
 };
 

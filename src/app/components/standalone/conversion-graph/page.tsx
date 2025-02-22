@@ -2,10 +2,11 @@
 'use client';
 
 import ConversionGraph from '@/components/ConversionGraph';
+import StandaloneLayout from '@/components/StandaloneLayout';
 
 export default function ConversionGraphPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <StandaloneLayout>
       <h1 className="text-3xl font-bold mb-6">Unit Conversion Interactive Graph</h1>
       <p className="text-lg text-gray-600 mb-8">
         Explore the relationship between inches and centimetres using this interactive conversion graph.
@@ -24,6 +25,6 @@ export default function ConversionGraphPage() {
           <li>• The diagonal line shows that 1 inch is approximately equal to 2.5 centimetres</li>
         </ul>
       </div>
-    </div>
+    </StandaloneLayout>
   );
 }
