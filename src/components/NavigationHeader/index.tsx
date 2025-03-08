@@ -1,6 +1,5 @@
 // src/components/NavigationHeader/index.tsx
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 
 export default function NavigationHeader() {
   return (

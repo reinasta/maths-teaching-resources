@@ -32,8 +32,6 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => 
     setAnimationKey(prev => prev + 1);
   }, []);
 
-  // Rest of your component code remains the same...
-
   // Calculate dimensions based on container size
   const updateDimensions = useCallback(() => {
     if (containerRef.current) {

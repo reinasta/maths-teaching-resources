@@ -1,6 +1,6 @@
 # Mathematics Teaching Resources - Conversion Graphs
 
-An interactive web application for teaching mathematical concepts through dynamic visualisations, focusing on unit conversions and coordinate geometry. Built with Next.js for static site generation and React for interactive components.
+An interactive mathematics education platform built with Next.js, focusing on dynamic visualizations and interactive learning components.
 
 ## Current Project Structure
 
@@ -37,7 +37,7 @@ remaths git:(main) ✗ tree -I "node_modules" -L 3
 9 directories, 18 files
 ```
 
-More details about the `src/` file structure:
+For a closer look at the `src/` directory structure:
 
 ```bash
 src/
@@ -93,190 +93,212 @@ We have just transitioned to Next.js. See the transition plan below, and the det
 - D3.js for data visualizations
 - Reveal.js for presentations
 
-## Development
+## Architecture Overview
 
-```bash
-# Run development server with Turbopack
-npm run dev
+### Core Components
 
-# Build static site
-npm run build
+1. **Conversion Graph System**
+   - D3.js-based visualization with React wrapper
+   - Manim videos
+   - Two-way data binding between graph and control panel
+   - State management via React hooks for animation sequences
+   - Responsive design with dynamic viewBox calculations
+   - Helper line animations for demonstrating conversions
 
-# Start production server
-npm start
+2. **Coordinate Plane System**
+   - Interactive point plotting with click events
+   - Support for example and practice points
+   - CSS2D labels integrated with D3 rendered points
+   - Responsive grid system with dynamic tick spacing
+
+3. **3D Prism Visualization**
+   - Three.js implementation with OrbitControls
+   - Real-time dimension updates with geometry recalculation
+   - CSS2D labels for measurements
+   - Unfolding animation capabilities
+   - Auto-adjusting camera positions
+
+4. **Control Panels**
+   - Unified styling system across all tools
+   - Direct state management with parent components
+   - Input validation for mathematical constraints
+   - Real-time calculation updates
+   - Responsive layout system
+
+### State Management
+
+The application uses React's Context API for global state where needed, but primarily relies on component-level state management:
+
+```typescript
+// Example state flow for conversion graph
+interface ConversionState {
+  direction: 'inches' | 'cm';
+  value: number;
+  animationKey: number;
+}
+
+// Example state flow for 3D prism
+interface PrismState {
+  dimensions: PrismDimensions;
+  isUnfolded: boolean;
+  calculations: PrismCalculations;
+}
 ```
 
-## Project Transition Plan
+### Styling Architecture
 
-*For details on the original project, read the section "Mathematics Teaching Resources - Conversion Graphs" below*
+The project uses a hybrid styling approach:
 
-This project is undergoing a structural transformation to better serve its purpose as a collection of mathematics teaching resources. The key objectives of this transition are:
+1. **Global Styles**
+   - Tailwind CSS for utility classes
+   - CSS variables for theme configuration
+   - Global responsive breakpoints
+   - Animation keyframes
 
-1. Better separation between content and interactive components
-2. Improved content management using a static site generator
-3. More flexible deployment options
-4. Better support for mathematical notation
-5. Easier content creation and maintenance
+2. **Component-Specific Styles**
+   - Module CSS for component isolation
+   - D3.js inline styles for dynamic SVG properties
+   - Three.js material system for 3D components
 
-### Current State
-
-The project currently consists of:
-- RevealJS slideshows for teaching mathematical concepts
-- React components for interactive visualizations
-- D3.js-based graphs and conversion tools
-- Custom styling and layouts
-
-### Planned Changes
-
-#### Phase 1: Repository Organization
-- Preserve current React/RevealJS implementation in main branch
-- Create new branch for static site development
-- Document all existing components and their dependencies
-
-#### Phase 2: New Static Site
-- Set up new static site project using a modern static site generator
-- Implement base site structure and navigation
-- Create content organization system
-- Set up mathematical notation support (LaTeX/MathJax)
-
-#### Phase 3: Component Integration
-- Gradually migrate existing React components
-- Ensure proper integration with static site framework
-- Maintain component reusability
-- Add proper documentation
-
-#### Phase 4: Content Migration
-- Move existing slide content to new structure
-- Implement improved content organization
-- Add metadata and tagging system
-- Create index and search functionality
-
-### Benefits of Transition
-
-This transition will result in:
-- Clear separation between content and interactive elements
-- Easier content creation and maintenance
-- Better organization of teaching resources
-- Improved accessibility and performance
-- More flexible deployment options
-
-### Timeline
-
-This transition is expected to proceed incrementally, ensuring that existing functionality remains available throughout the process. Each phase will be thoroughly tested before proceeding to the next.
-
----
-*Note: This transition plan was added on February 16, 2025, to document the planned structural changes to the project.*
-
-
-# Project structure
-
-This is the old project structure, superseded by the Nextjs-based setup above.
-
-```bash
-slides-revealjs/
-├── package.json           # Project dependencies
-├── index.html            # Entry point
-├── src/
-│   ├── styles/
-│   │   ├── main.css      # Main styles
-│   │   └── theme.css     # Theme variables
-│   ├── components/
-│   │   ├── CoordinatePlane.jsx
-│   │   └── ConversionGraph.jsx
-│   ├── slides/
-│   │   └── conversion/
-│   │       ├── index.html  # Slide content
-│   │       └── images/     # Slide-specific images
-│   └── utils/
-│       └── animation.js   # Animation helpers
-└── vite.config.js        # Build configuration
+```css
+/* Example of design system variables */
+:root {
+  --primary-color: #0072B2;
+  --grid-line-color: #E5E7EB;
+  --axis-line-color: #374151;
+}
 ```
 
+### Technical Specifications
 
+#### Conversion Graph Component
 
-## Project Overview
+```typescript
+// Core data structure
+interface ConversionData {
+  x: number;      // inches
+  y: number;      // centimetres
+  direction: 'inches' | 'cm';
+}
 
-This project creates browser-based mathematics teaching resources that combine presentation slides with interactive visualizations. The initial focus is on conversion graphs and coordinate geometry, designed for Year 8 students.
-
-### Key Features
-
-- Interactive coordinate plane visualization
-- Dynamic conversion graphs with animations
-- Step-by-step mathematical concept exploration
-- Responsive and accessible design
-- British English mathematical terminology
-
-## Technical Stack
-
-- **React 18** - For building interactive UI components
-- **RevealJS** - Presentation framework
-- **D3.js** - Data visualization library
-- **Vite** - Build tool and development server
-
-## Architecture
-
-### Component Structure
-
-The project uses a modular component architecture:
-
-```
-src/
-├── components/
-│   ├── CoordinatePlane.jsx    # Reusable coordinate system
-│   └── ConversionGraph.jsx    # Interactive conversion visualizations
-├── slides/
-│   └── conversion/           # Slide content and configuration
-└── styles/
-    └── main.css             # Global styles and theme
+// Animation timing (ms)
+const ANIMATION_TIMINGS = {
+  HELPER_LINE_DELAY: 500,
+  HELPER_LINE_DURATION: 1500,
+  POINT_APPEARANCE_DELAY: 1750,
+};
 ```
 
-### Key Components
+#### 3D Prism Component
 
-1. **CoordinatePlane**
-   - Renders a coordinate system with customizable axes
-   - Handles point plotting and interactions
-   - Supports interactive point highlighting
+```typescript
+// Geometry calculations
+interface PrismGeometry {
+  vertices: Float32Array;
+  indices: Uint16Array;
+  normals: Float32Array;
+}
 
-2. **ConversionGraph**
-   - Builds on CoordinatePlane for unit conversions
-   - Implements animated conversion demonstrations
-   - Provides interactive conversion examples
+// Label positioning
+interface LabelConfig {
+  offset: Vector3;
+  rotation: Euler;
+  scale: number;
+}
+```
 
-### Design Principles
+### Performance Considerations
 
-- Component reusability for different mathematical concepts
-- Clear separation of presentation and interactive elements
-- Accessibility-first approach to mathematical visualization
-- Progressive enhancement for different device capabilities
+1. **D3.js Optimizations**
+   - ViewBox-based scaling instead of resize recalculations
+   - Debounced window resize handlers
+   - Efficient update patterns for animations
+
+2. **Three.js Performance**
+   - Geometry reuse when possible
+   - Proper disposal of materials and geometries
+   - Optimized render loop with RAF
+   - Camera frustum culling
+
+3. **React Optimizations**
+   - Memoization of expensive calculations
+   - Proper cleanup in useEffect hooks
+   - Efficient state updates for animations
+
+### Build Configuration
+
+Key build configurations for optimal performance:
+
+```js
+// webpack.config.js optimization
+{
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        threejs: {
+          test: /[\\/]node_modules[\\/]three[\\/]/,
+          name: 'vendor-threejs',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+}
+```
+
+### Testing Strategy
+
+1. **Unit Tests**
+   - Component rendering
+   - Mathematical calculations
+   - State management
+   - Event handlers
+
+2. **Integration Tests**
+   - Component interactions
+   - Animation sequences
+   - User interaction flows
+
+3. **Visual Regression Tests**
+   - Graph rendering
+   - 3D model appearances
+   - Responsive layouts
 
 ## Development Guidelines
 
-### Adding New Content
+### Component Design
 
-1. Create new slide content in `src/slides/`
-2. Develop any required interactive components in `src/components/`
-3. Register new slides in the main presentation structure
+1. **Visualization Components**
+   - Must handle window resizing gracefully
+   - Should provide accessibility features
+   - Must clean up resources (especially Three.js)
+   - Should support touch interactions
 
-### Component Development
-
-- Follow React functional component patterns
-- Use D3.js for data visualization
-- Implement responsive design using CSS variables
-- Include ARIA labels and keyboard navigation
-- Add British English tooltips and labels
+2. **Control Panels**
+   - Must validate mathematical constraints
+   - Should provide immediate feedback
+   - Must be keyboard accessible
+   - Should support mobile interactions
 
 ### Mathematical Accuracy
 
-- Use precise mathematical terminology
-- Validate conversions and calculations
-- Provide clear step-by-step explanations
-- Include mathematical notation where appropriate
+- All calculations should be validated against known correct values
+- Rounding should be consistent across components
+- Units should be clearly displayed
+- Error margins should be documented
 
-## Future Development
+### Responsive Design
 
-- Additional mathematical topics and visualizations
-- More interactive exercises and examples
-- Enhanced animation capabilities
-- Expanded accessibility features
-- Support for different educational levels
-- Publish resources to the web on GitHub Pages or other static site hosting platform
+The application uses custom breakpoints for specialized component behavior:
+
+```typescript
+const BREAKPOINTS = {
+  MOBILE: 480,
+  TABLET: 768,
+  DESKTOP: 1024,
+  LARGE: 1440,
+};
+```
+
+Each visualization component should adjust its behaviour based on screen size while maintaining mathematical accuracy and usability.
