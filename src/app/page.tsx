@@ -93,6 +93,19 @@ export default function Home() {
                   Watch video demonstrations about enlargement and scale factors
                 </p>
               </Link>
+
+              <Link 
+                href="/components/standalone/trapezoidal-prism" 
+                className="block p-6 bg-white border border-gray-200 rounded-lg 
+                         hover:border-primary hover:shadow-md transition-all"
+              >
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  Trapezoidal Prism
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Explore the properties of a trapezoidal prism in 3D
+                </p>
+              </Link>
             </div>
           </section>
         </div>

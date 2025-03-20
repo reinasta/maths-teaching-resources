@@ -11,3 +11,10 @@ export interface PrismCalculations {
   volume: number;
   isValid: boolean;
 }
+
+export interface TrapezoidalPrismDimensions {
+  topWidth: number;
+  bottomWidth: number;
+  height: number;
+  depth: number;
+}
