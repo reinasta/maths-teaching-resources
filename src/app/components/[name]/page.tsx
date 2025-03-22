@@ -8,7 +8,6 @@ export default function ComponentPage({ params }: { params: { name: string } }) 
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Simple loading simulation
     const timer = setTimeout(() => {
       setLoading(false);
     }, 500);
@@ -20,10 +19,11 @@ export default function ComponentPage({ params }: { params: { name: string } }) 
   
   return (
     <StandaloneLayout>
-      <h1>{params.name}</h1>
-      <p>Component details will be displayed here</p>
+      <h1 className="text-3xl font-bold">{params.name}</h1>
+      <p className="my-4">This component is under development.</p>
       <div className="component-container">
-        {/* Component rendering logic goes here */}
+        {/* Basic placeholder content */}
+        <p>Content will be added soon.</p>
       </div>
     </StandaloneLayout>
   );
