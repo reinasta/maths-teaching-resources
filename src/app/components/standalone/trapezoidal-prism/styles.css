@@ -1,0 +1,42 @@
+.conversion-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.visualization-container {
+  position: relative;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  min-height: 480px;
+}
+
+.controls-container {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.annotation {
+  color: #000000;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+  position: relative;
+  pointer-events: none;
+  white-space: nowrap;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 768px) {
+  .conversion-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .visualization-container {
+    min-height: 320px;
+  }
+}
