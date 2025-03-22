@@ -8,6 +8,12 @@ import { TrapezoidalPrismDimensions, VisualStyle } from './types';
 import { calculateTrapezoidalPrismValues } from '@/utils/trapezoidalPrismCalculations';
 import './styles.css';
 
+export interface StandaloneLayoutProps {
+  children: React.ReactNode;
+  description?: string;
+  title?: string; // Added title property
+}
+
 export default function TrapezoidalPrismPage() {
   const [dimensions, setDimensions] = useState<TrapezoidalPrismDimensions>({
     topWidth: 2,
@@ -46,10 +52,10 @@ export default function TrapezoidalPrismPage() {
   }
 
   return (
-    <StandaloneLayout
-      title="Trapezoidal Prism"
-      description="Interactive 3D trapezoidal prism with adjustable dimensions"
-    >
+    <StandaloneLayout>
+      <h1 className="text-3xl font-bold mb-6">Trapezoidal Prism</h1>
+      <p className="mb-8">Interactive 3D trapezoidal prism with adjustable dimensions</p>
+      
       <div className="flex flex-col lg:flex-row">
         <div className="lg:w-2/3 mb-6 lg:mb-0">
           <TrapezoidalPrism
