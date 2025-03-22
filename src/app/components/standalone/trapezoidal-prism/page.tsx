@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import StandaloneLayout from '@/components/StandaloneLayout';
 import TrapezoidalPrism from '@/components/Prism/TrapezoidalPrism';
 import TrapezoidalPrismControls from '@/components/PrismControls/TrapezoidalPrismControls';
@@ -18,12 +18,32 @@ export default function TrapezoidalPrismPage() {
   
   const [isUnfolded, setIsUnfolded] = useState(false);
   const [visualStyle, setVisualStyle] = useState<VisualStyle>('solid');
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    // Simple loading simulation
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Calculate derived values
   const calculations = useMemo(() => 
     calculateTrapezoidalPrismValues(dimensions), 
     [dimensions]
   );
+
+  if (loading) {
+    return (
+      <StandaloneLayout>
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      </StandaloneLayout>
+    );
+  }
 
   return (
     <StandaloneLayout
