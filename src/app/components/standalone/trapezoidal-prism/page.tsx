@@ -4,8 +4,9 @@ import React, { useState, useMemo, useEffect } from 'react';
 import StandaloneLayout from '@/components/StandaloneLayout';
 import TrapezoidalPrism from '@/components/Prism/TrapezoidalPrism';
 import TrapezoidalPrismControls from '@/components/PrismControls/TrapezoidalPrismControls';
-import { TrapezoidalPrismDimensions, VisualStyle } from './types';
+import { TrapezoidalPrismDimensions, VisualStyle, LabelConfig } from './types';
 import { calculateTrapezoidalPrismValues } from '@/utils/trapezoidalPrismCalculations';
+import LabelLegend from '../../../../components/LabelLegend/LabelLegend';
 import './styles.css';
 
 export interface StandaloneLayoutProps {
@@ -25,6 +26,11 @@ export default function TrapezoidalPrismPage() {
   const [isUnfolded, setIsUnfolded] = useState(false);
   const [visualStyle, setVisualStyle] = useState<VisualStyle>('solid');
   const [loading, setLoading] = useState(true);
+  const [labelConfig, setLabelConfig] = useState<LabelConfig>({
+    showVolume: true,
+    showSurfaceArea: false,
+    showFaces: false
+  });
   
   useEffect(() => {
     // Simple loading simulation
@@ -62,7 +68,10 @@ export default function TrapezoidalPrismPage() {
             dimensions={dimensions}
             isUnfolded={isUnfolded}
             visualStyle={visualStyle}
+            labelConfig={labelConfig}
+            calculations={calculations} // Add this line
           />
+          <LabelLegend labelConfig={labelConfig} prismType="trapezoidal" />
         </div>
         <div className="lg:w-1/3 lg:pl-6">
           <TrapezoidalPrismControls
@@ -72,6 +81,8 @@ export default function TrapezoidalPrismPage() {
             onUnfoldChange={setIsUnfolded}
             visualStyle={visualStyle}
             onVisualStyleChange={setVisualStyle}
+            labelConfig={labelConfig}
+            onLabelConfigChange={setLabelConfig}
           />
         </div>
       </div>

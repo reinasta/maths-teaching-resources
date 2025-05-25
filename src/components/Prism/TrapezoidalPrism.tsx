@@ -1,19 +1,24 @@
 import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { TrapezoidalPrismDimensions, VisualStyle } from '../../app/components/standalone/trapezoidal-prism/types';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import * as THREE from 'three'; // Ensure THREE is imported for Vector3 etc.
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { TrapezoidalPrismDimensions, VisualStyle, LabelConfig, TrapezoidalPrismCalculations } from '../../app/components/standalone/trapezoidal-prism/types'; // Ensure types are correctly imported
 
-interface TrapezoidalPrismProps {
+// Export the interface so it can be imported in test files
+export interface TrapezoidalPrismProps {
   dimensions: TrapezoidalPrismDimensions;
   isUnfolded?: boolean;
   visualStyle: VisualStyle;
+  labelConfig?: LabelConfig;
+  calculations?: TrapezoidalPrismCalculations;
 }
 
 const TrapezoidalPrism: React.FC<TrapezoidalPrismProps> = ({ 
   dimensions, 
   isUnfolded = false,
-  visualStyle = 'solid'
+  visualStyle = 'solid',
+  labelConfig = { showVolume: true, showSurfaceArea: false, showFaces: false },
+  calculations // Destructure calculations
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -22,12 +27,11 @@ const TrapezoidalPrism: React.FC<TrapezoidalPrismProps> = ({
     const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
     const meshRef = useRef<THREE.Mesh | null>(null);
     const controlsRef = useRef<OrbitControls | null>(null);
-    const labelsGroupRef = useRef<THREE.Group | null>(null);
     const _edgesRef = useRef<THREE.LineSegments | null>(null);
 
     useEffect(() => {
         const currentContainer = containerRef.current;
-        const currentLabelsGroup = labelsGroupRef.current;
+        // const currentLabelsGroup = labelsGroupRef.current; // This can be removed if labelsGroup is managed by name
         if (!currentContainer) return;
 
         const webGLRenderer = new THREE.WebGLRenderer({ antialias: true });
@@ -65,32 +69,33 @@ const TrapezoidalPrism: React.FC<TrapezoidalPrismProps> = ({
         orbitControls.maxDistance = 10;
         controlsRef.current = orbitControls;
 
-        // Improved lighting setup
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
 
-        // Main directional light with adjusted intensity
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
         directionalLight.position.set(10, 10, 10);
         scene.add(directionalLight);
 
-        // Add a second directional light from another angle for better edge definition
         const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
         directionalLight2.position.set(-5, 3, -10);
         scene.add(directionalLight2);
 
         const prismGeometry = createTrapezoidalPrismGeometry(dimensions, isUnfolded);
         
-        // Create the mesh with appropriate material based on visualStyle
         const mesh = createPrismMesh(prismGeometry, visualStyle, isUnfolded);
         scene.add(mesh);
         meshRef.current = mesh;
 
-        const labelsGroup = new THREE.Group();
-        scene.add(labelsGroup);
-        labelsGroupRef.current = labelsGroup;
+        // Ensure labelsGroup is created and named for reliable access
+        let labelsGroup = scene.children.find(child => child.name === 'labelsGroup') as THREE.Group;
+        if (!labelsGroup) {
+            labelsGroup = new THREE.Group();
+            labelsGroup.name = 'labelsGroup';
+            scene.add(labelsGroup);
+        }
+        // labelsGroupRef.current = labelsGroup; // Still useful if direct ref is needed elsewhere
         
-        updateLabels(dimensions, scene, mesh, isUnfolded);
+        updateLabels(dimensions, scene, mesh, isUnfolded, labelConfig, calculations, visualStyle); 
 
         const animate = () => {
             requestAnimationFrame(animate);
@@ -101,49 +106,52 @@ const TrapezoidalPrism: React.FC<TrapezoidalPrismProps> = ({
         animate();
 
         const handleResize = () => {
-            if (!currentContainer) return;
+            if (!currentContainer || !cameraRef.current || !rendererRef.current || !labelRendererRef.current) return;
             const width = currentContainer.clientWidth;
             const height = currentContainer.clientHeight;
 
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            webGLRenderer.setSize(width, height);
-            css2DRenderer.setSize(width, height);
+            cameraRef.current.aspect = width / height;
+            cameraRef.current.updateProjectionMatrix();
+            rendererRef.current.setSize(width, height);
+            labelRendererRef.current.setSize(width, height);
         };
 
         window.addEventListener('resize', handleResize);
 
         return () => {
             window.removeEventListener('resize', handleResize);
-            webGLRenderer.dispose();
-            css2DRenderer.domElement.remove();
+            if (rendererRef.current) rendererRef.current.dispose();
+            if (labelRendererRef.current) labelRendererRef.current.domElement.remove();
             
-            if (currentContainer) {
-                currentContainer.removeChild(webGLRenderer.domElement);
+            if (currentContainer && rendererRef.current) {
+                // Check if domElement is still a child before removing
+                if (rendererRef.current.domElement.parentNode === currentContainer) {
+                    currentContainer.removeChild(rendererRef.current.domElement);
+                }
             }
 
-            if (currentLabelsGroup) {
-                currentLabelsGroup.children.forEach(child => {
-                    if (child instanceof THREE.Mesh) {
-                        child.geometry.dispose();
-                        if (child.material instanceof THREE.Material) {
-                            child.material.dispose();
+            // Clear labels from the specific group by name
+            const groupToRemove = sceneRef.current?.children.find(child => child.name === 'labelsGroup') as THREE.Group;
+            if (groupToRemove) {
+                while (groupToRemove.children.length > 0) {
+                    const child = groupToRemove.children[0];
+                    groupToRemove.remove(child);
+                    if (child instanceof CSS2DObject) {
+                        if (child.element && child.element.parentNode) {
+                            child.element.parentNode.removeChild(child.element);
                         }
                     }
-                    if (child instanceof CSS2DObject) {
-                        child.element.remove();
-                    }
-                });
+                }
+                sceneRef.current?.remove(groupToRemove);
             }
         };
-    }, [dimensions, isUnfolded, visualStyle]);
+    }, [dimensions, isUnfolded, visualStyle, labelConfig, calculations]);
 
     useEffect(() => {
         if (!meshRef.current || !sceneRef.current) return;
         
         const newGeometry = createTrapezoidalPrismGeometry(dimensions, isUnfolded);
         
-        // Remove the old mesh
         if (sceneRef.current && meshRef.current) {
             sceneRef.current.remove(meshRef.current);
             if (meshRef.current.geometry) meshRef.current.geometry.dispose();
@@ -154,15 +162,17 @@ const TrapezoidalPrism: React.FC<TrapezoidalPrismProps> = ({
             }
         }
         
-        // Create a new mesh with the updated geometry and visual style
         const newMesh = createPrismMesh(newGeometry, visualStyle, isUnfolded);
         if (sceneRef.current) {
             sceneRef.current.add(newMesh);
             meshRef.current = newMesh;
         }
         
-        updateLabels(dimensions, sceneRef.current, newMesh, isUnfolded);
-    }, [dimensions, isUnfolded, visualStyle]);
+        // Ensure scene and mesh are available for updateLabels
+        if (sceneRef.current && meshRef.current) {
+             updateLabels(dimensions, sceneRef.current, newMesh, isUnfolded, labelConfig, calculations, visualStyle);
+        }
+    }, [dimensions, isUnfolded, visualStyle, labelConfig, calculations]);
 
     return (
         <div 
@@ -271,192 +281,201 @@ function createPrismMesh(geometry: THREE.BufferGeometry, visualStyle: VisualStyl
 }
 
 // Improved updateLabels function with better label positioning
-function updateLabels(dimensions: TrapezoidalPrismDimensions, scene: THREE.Scene, mesh: THREE.Mesh, isUnfolded: boolean): void {
-    // Find existing labels group or create a new one
-    let labelsGroup = scene.children.find(child => child instanceof THREE.Group) as THREE.Group;
-    
-    if (!labelsGroup) {
-        labelsGroup = new THREE.Group();
-        scene.add(labelsGroup);
-    } else {
-        // Clear existing labels
-        while (labelsGroup.children.length > 0) {
-            const child = labelsGroup.children[0];
-            labelsGroup.remove(child);
-            if (child instanceof CSS2DObject) {
-                child.element.remove();
-            }
+function updateLabels(
+  dimensions: TrapezoidalPrismDimensions,
+  scene: THREE.Scene,
+  _mesh: THREE.Mesh, 
+  isUnfolded: boolean,
+  labelConfig: LabelConfig = { showVolume: true, showSurfaceArea: false, showFaces: false },
+  calculations?: TrapezoidalPrismCalculations,
+  _visualStyle: VisualStyle = 'solid'
+): void {
+  let labelsGroup = scene.children.find(child => child.name === 'labelsGroup') as THREE.Group;
+  if (!labelsGroup) {
+    labelsGroup = new THREE.Group();
+    labelsGroup.name = 'labelsGroup';
+    scene.add(labelsGroup);
+  } else {
+    while (labelsGroup.children.length > 0) {
+      const child = labelsGroup.children[0];
+      labelsGroup.remove(child);
+      if (child instanceof CSS2DObject) {
+        if (child.element && child.element.parentNode) {
+          child.element.parentNode.removeChild(child.element);
         }
+      }
     }
-  
-    const { topWidth, bottomWidth, height, depth } = dimensions;
+  }
 
-    const createLabel = (position: THREE.Vector3, text: string, color?: string) => {
-        const div = document.createElement('div');
-        div.className = 'annotation';
-        div.textContent = text;
-        div.style.backgroundColor = color || 'rgba(255, 255, 255, 0.8)';
-        div.style.color = 'black';
-        div.style.padding = '2px 6px';
-        div.style.borderRadius = '4px';
-        div.style.fontSize = '0.8em';
-        div.style.pointerEvents = 'none';
-        div.style.border = '1px solid rgba(0,0,0,0.3)';
-        
-        const label = new CSS2DObject(div);
-        label.position.copy(position);
-        
-        labelsGroup.add(label);
-    };
+  if (!labelConfig.showVolume && !labelConfig.showSurfaceArea && !labelConfig.showFaces) {
+    return;
+  }
 
-    if (!isUnfolded) {
-        // Regular labeling for folded prism - unchanged
-        // Top face midpoints
-        const topFrontMidpoint = new THREE.Vector3(0, height, depth / 2);
-        
-        // Bottom face midpoints
-        const bottomFrontMidpoint = new THREE.Vector3(0, 0, depth / 2);
-        const bottomLeftMidpoint = new THREE.Vector3(-bottomWidth / 2, 0, 0);
-        
-        // Height midpoints
-        const frontRightHeightMidpoint = new THREE.Vector3(bottomWidth / 2, height / 2, depth / 2);
-        
-        // Create labels
-        createLabel(topFrontMidpoint, `TW: ${topWidth.toFixed(1)}`);
-        createLabel(bottomFrontMidpoint, `BW: ${bottomWidth.toFixed(1)}`);
-        createLabel(bottomLeftMidpoint, `D: ${depth.toFixed(1)}`);
-        createLabel(frontRightHeightMidpoint, `H: ${height.toFixed(1)}`);
-    } else {
-        // More precise labels for unfolded prism
-        const halfTopWidth = topWidth / 2;
-        const halfBottomWidth = bottomWidth / 2;
-        const halfDepth = depth / 2;
-        
-        // Calculate exact coordinates for improved label positioning
-        
-        // Bottom face - position labels along the edges
-        createLabel(
-            new THREE.Vector3(0, 0.2, 0), 
-            `Bottom Face`,
-            'rgba(173, 216, 230, 0.7)'
-        );
-        
-        // Width label on bottom face
-        createLabel(
-            new THREE.Vector3(0, 0.1, -halfDepth * 0.5), 
-            `BW: ${bottomWidth.toFixed(1)}`
-        );
-        
-        // Depth label on bottom face
-        createLabel(
-            new THREE.Vector3(-halfBottomWidth * 0.6, 0.1, 0), 
-            `D: ${depth.toFixed(1)}`
-        );
-        
-        // Front face - position labels along the edges
-        const frontFaceZ = halfDepth;
-        createLabel(
-            new THREE.Vector3(0, 0.2, frontFaceZ + height * 0.5), 
-            `Front Face`,
-            'rgba(255, 200, 200, 0.7)'
-        );
-        
-        // Bottom width label on front face
-        createLabel(
-            new THREE.Vector3(0, 0.1, frontFaceZ + height * 0.1), 
-            `BW: ${bottomWidth.toFixed(1)}`
-        );
-        
-        // Height label on front face
-        createLabel(
-            new THREE.Vector3(halfBottomWidth * 0.7, 0.1, frontFaceZ + height * 0.5), 
-            `H: ${height.toFixed(1)}`
-        );
-        
-        // Back face - position labels appropriately
-        const backFaceZ = -halfDepth;
-        createLabel(
-            new THREE.Vector3(0, 0.2, backFaceZ - height * 0.5), 
-            `Back Face`,
-            'rgba(200, 255, 200, 0.7)'
-        );
-        
-        // Bottom width label on back face
-        createLabel(
-            new THREE.Vector3(0, 0.1, backFaceZ - height * 0.1), 
-            `BW: ${bottomWidth.toFixed(1)}`
-        );
-        
-        // Height label on back face
-        createLabel(
-            new THREE.Vector3(halfBottomWidth * 0.7, 0.1, backFaceZ - height * 0.5), 
-            `H: ${height.toFixed(1)}`
-        );
-        
-        // Left face - position labels along the edges
-        const leftFaceX = -halfBottomWidth;
-        createLabel(
-            new THREE.Vector3(leftFaceX - height * 0.5, 0.2, 0), 
-            `Left Face`,
-            'rgba(255, 255, 200, 0.7)'
-        );
-        
-        // Depth label on left face
-        createLabel(
-            new THREE.Vector3(leftFaceX - height * 0.1, 0.1, 0), 
-            `D: ${depth.toFixed(1)}`
-        );
-        
-        // Height label on left face
-        createLabel(
-            new THREE.Vector3(leftFaceX - height * 0.5, 0.1, halfDepth * 0.7), 
-            `H: ${height.toFixed(1)}`
-        );
-        
-        // Right face - position labels along the edges
-        const rightFaceX = halfBottomWidth;
-        createLabel(
-            new THREE.Vector3(rightFaceX + height * 0.5, 0.2, 0), 
-            `Right Face`,
-            'rgba(200, 255, 255, 0.7)'
-        );
-        
-        // Depth label on right face
-        createLabel(
-            new THREE.Vector3(rightFaceX + height * 0.1, 0.1, 0), 
-            `D: ${depth.toFixed(1)}`
-        );
-        
-        // Height label on right face
-        createLabel(
-            new THREE.Vector3(rightFaceX + height * 0.5, 0.1, halfDepth * 0.7), 
-            `H: ${height.toFixed(1)}`
-        );
-        
-        // Top face - position labels along the edges
-        const topFaceZ = frontFaceZ + height;
-        createLabel(
-            new THREE.Vector3(0, 0.2, topFaceZ + halfDepth), 
-            `Top Face`,
-            'rgba(255, 200, 255, 0.7)'
-        );
-        
-        // Top width label on top face
-        createLabel(
-            new THREE.Vector3(0, 0.1, topFaceZ + halfDepth * 0.4), 
-            `TW: ${topWidth.toFixed(1)}`
-        );
-        
-        // Depth label on top face
-        createLabel(
-            new THREE.Vector3(halfTopWidth * 0.7, 0.1, topFaceZ + halfDepth * 0.7), 
-            `D: ${depth.toFixed(1)}`
-        );
+  const { topWidth, bottomWidth, height, depth: prismDepth } = dimensions; // Renamed depth to prismDepth for clarity
+
+  const createLabel = (position: THREE.Vector3, text: string, color: string = '#333333', className: string = 'label', offset?: THREE.Vector3) => {
+    const div = document.createElement('div');
+    div.className = className;
+    div.textContent = text;
+    div.style.color = color;
+    div.style.fontSize = '12px';
+    div.style.fontFamily = 'Arial, sans-serif';
+    div.style.backgroundColor = 'rgba(255, 255, 255, 0.75)';
+    div.style.padding = '2px 5px';
+    div.style.borderRadius = '3px';
+    div.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+    div.style.pointerEvents = 'none';
+
+    const label = new CSS2DObject(div);
+    label.position.copy(position);
+    if (offset) {
+      label.position.add(offset);
     }
+    return label;
+  };
+
+  if (!isUnfolded) {
+    // --- FOLDED STATE LOGIC (remains the same) ---
+    const yBase = -height / 2;
+    const yTop = height / 2;
+    const zFront = prismDepth / 2;
+    const zBack = -prismDepth / 2;
+    const xOffset_bottom_left = -bottomWidth / 2;
+    const xOffset_bottom_right = bottomWidth / 2;
+
+    let horiz_proj_left = 0;
+    let horiz_proj_right = 0;
+
+    if (calculations) {
+      if (calculations.leftSide * calculations.leftSide >= height * height) {
+        horiz_proj_left = Math.sqrt(calculations.leftSide * calculations.leftSide - height * height);
+      }
+      if (calculations.rightSide * calculations.rightSide >= height * height) {
+        horiz_proj_right = Math.sqrt(calculations.rightSide * calculations.rightSide - height * height);
+      }
+    }
+
+    const v_bottom_left_front = new THREE.Vector3(xOffset_bottom_left, yBase, zFront);
+    const v_bottom_right_front = new THREE.Vector3(xOffset_bottom_right, yBase, zFront);
+    const v_top_left_front = new THREE.Vector3(xOffset_bottom_left + horiz_proj_left, yTop, zFront);
+    const v_top_right_front = new THREE.Vector3(xOffset_bottom_right - horiz_proj_right, yTop, zFront);
+
+    const v_bottom_left_back = new THREE.Vector3(xOffset_bottom_left, yBase, zBack);
+    const v_bottom_right_back = new THREE.Vector3(xOffset_bottom_right, yBase, zBack);
+    const v_top_left_back = new THREE.Vector3(xOffset_bottom_left + horiz_proj_left, yTop, zBack);
+    const v_top_right_back = new THREE.Vector3(xOffset_bottom_right - horiz_proj_right, yTop, zBack);
+
+    if (labelConfig.showSurfaceArea || labelConfig.showVolume) {
+      const topEdgeCenter = new THREE.Vector3().addVectors(v_top_left_front, v_top_right_front).multiplyScalar(0.5);
+      labelsGroup.add(createLabel(topEdgeCenter, `Wₜ: ${topWidth.toFixed(1)}`, '#0000FF', 'label', new THREE.Vector3(0, 0.2, 0)));
+      const bottomEdgeCenter = new THREE.Vector3().addVectors(v_bottom_left_front, v_bottom_right_front).multiplyScalar(0.5);
+      labelsGroup.add(createLabel(bottomEdgeCenter, `Wᵦ: ${bottomWidth.toFixed(1)}`, '#0000FF', 'label', new THREE.Vector3(0, -0.2, 0)));
+      const heightLabelX = (v_top_left_front.x < v_bottom_left_front.x ? v_top_left_front.x : v_bottom_left_front.x) - 0.3;
+      labelsGroup.add(createLabel(new THREE.Vector3(heightLabelX, 0, zFront), `H: ${height.toFixed(1)}`, '#FF0000', 'label'));
+      const depthEdgeCenter = new THREE.Vector3().addVectors(v_bottom_left_front, v_bottom_left_back).multiplyScalar(0.5);
+      labelsGroup.add(createLabel(depthEdgeCenter, `D: ${prismDepth.toFixed(1)}`, '#FFA500', 'label', new THREE.Vector3(0, -0.2, 0)));
+
+      if (labelConfig.showSurfaceArea) {
+        if (!calculations) {
+          console.warn('Surface area labels (Sl, Sr) require calculations, but calculations are undefined.');
+          labelsGroup.add(createLabel(new THREE.Vector3(0,0,0), "SA calculations missing for Sl/Sr!", "red"));
+        } else {
+          const { leftSide, rightSide } = calculations;
+          const leftSlantedEdgeCenter = new THREE.Vector3().addVectors(v_bottom_left_front, v_top_left_front).multiplyScalar(0.5);
+          labelsGroup.add(createLabel(leftSlantedEdgeCenter, `Sₗ: ${leftSide.toFixed(1)}`, '#008000', 'label', new THREE.Vector3(-0.2, 0, 0)));
+          const rightSlantedEdgeCenter = new THREE.Vector3().addVectors(v_bottom_right_front, v_top_right_front).multiplyScalar(0.5);
+          labelsGroup.add(createLabel(rightSlantedEdgeCenter, `Sᵣ: ${rightSide.toFixed(1)}`, '#008000', 'label', new THREE.Vector3(0.2, 0, 0)));
+        }
+      }
+    }
+    if (labelConfig.showFaces) {
+      const faceLabelColor = '#333333';
+      labelsGroup.add(createLabel(new THREE.Vector3(0, yBase, 0), "Bottom", faceLabelColor, 'face-label', new THREE.Vector3(0, -0.3, 0)));
+      const topFaceCenter = new THREE.Vector3((v_top_left_front.x+v_top_right_front.x+v_top_left_back.x+v_top_right_back.x)/4, yTop, (v_top_left_front.z+v_top_right_front.z+v_top_left_back.z+v_top_right_back.z)/4);
+      labelsGroup.add(createLabel(topFaceCenter, "Top", faceLabelColor, 'face-label', new THREE.Vector3(0, 0.3, 0)));
+      const frontFaceCenter = new THREE.Vector3().add(v_bottom_left_front).add(v_bottom_right_front).add(v_top_left_front).add(v_top_right_front).multiplyScalar(0.25);
+      labelsGroup.add(createLabel(frontFaceCenter, "Front", faceLabelColor, 'face-label', new THREE.Vector3(0, 0, 0.3)));
+      const backFaceCenter = new THREE.Vector3().add(v_bottom_left_back).add(v_bottom_right_back).add(v_top_left_back).add(v_top_right_back).multiplyScalar(0.25);
+      labelsGroup.add(createLabel(backFaceCenter, "Back", faceLabelColor, 'face-label', new THREE.Vector3(0, 0, -0.3)));
+      const leftFaceCenter = new THREE.Vector3().add(v_bottom_left_front).add(v_top_left_front).add(v_bottom_left_back).add(v_top_left_back).multiplyScalar(0.25);
+      labelsGroup.add(createLabel(leftFaceCenter, "Left Side", faceLabelColor, 'face-label', new THREE.Vector3(-0.3, 0, 0)));
+      const rightFaceCenter = new THREE.Vector3().add(v_bottom_right_front).add(v_top_right_front).add(v_bottom_right_back).add(v_top_right_back).multiplyScalar(0.25);
+      labelsGroup.add(createLabel(rightFaceCenter, "Right Side", faceLabelColor, 'face-label', new THREE.Vector3(0.3, 0, 0)));
+    }
+  } else {
+    // --- UNFOLDED STATE LOGIC (Labels in XZ plane, Y is for offset from plane) ---
+    const halfBottomWidth = bottomWidth / 2;
+    const halfTopWidth = topWidth / 2;
+    const halfPrismDepth = prismDepth / 2; // Half of the prism's depth dimension
+    const yLabelOffset = 0.1; // All labels slightly above the XZ plane of the net
+    const labelOffsetSmall = 0.2; // Small offset for positioning labels away from edges
+
+    // Dimension Labels (Volume or Surface Area)
+    if (labelConfig.showSurfaceArea || labelConfig.showVolume) {
+      // Bottom Face (Wb, D)
+      labelsGroup.add(createLabel(new THREE.Vector3(0, yLabelOffset, halfPrismDepth + labelOffsetSmall), `Wᵦ: ${bottomWidth.toFixed(1)}`, '#0000FF'));
+      labelsGroup.add(createLabel(new THREE.Vector3(-halfBottomWidth - labelOffsetSmall, yLabelOffset, 0), `D: ${prismDepth.toFixed(1)}`, '#FFA500'));
+
+      // Front Face (H)
+      // Center Z of Front Face: halfPrismDepth + height / 2
+      // Place H label to the side of the front face, aligned with its height.
+      labelsGroup.add(createLabel(new THREE.Vector3(-halfBottomWidth - labelOffsetSmall, yLabelOffset, halfPrismDepth + height / 2), `H: ${height.toFixed(1)}`, '#FF0000'));
+
+      // Top Face (Wt)
+      // Top face is attached to front face, its Z starts at halfPrismDepth + height
+      // Center Z of Top Face: halfPrismDepth + height + halfPrismDepth / 2 (if top face rectangle has length `prismDepth`)
+      // The top face in the net is a rectangle of topWidth x prismDepth.
+      // It starts at Z = halfPrismDepth + height. Its length is prismDepth.
+      // So it ends at Z = halfPrismDepth + height + prismDepth.
+      // Wt label for Top Face, place it beyond its Z extent.
+      labelsGroup.add(createLabel(new THREE.Vector3(0, yLabelOffset, halfPrismDepth + height + halfPrismDepth + labelOffsetSmall), `Wₜ: ${topWidth.toFixed(1)}`, '#0000FF'));
+
+      if (labelConfig.showSurfaceArea) {
+        if (!calculations) {
+          console.warn('Surface area labels (Sl, Sr) require calculations, but calculations are undefined.');
+          labelsGroup.add(createLabel(new THREE.Vector3(0, yLabelOffset, halfPrismDepth + height / 2), "SA calc missing!", "red"));
+        } else {
+          const { leftSide, rightSide } = calculations;
+          // Slanted side labels on the Front Face trapezoid
+          // Left slanted side (v4-v7 of geometry): midX = (-hBW-hTW)/2, midZ = hD+H/2
+          const slMidX = (-halfBottomWidth - halfTopWidth) / 2;
+          const slSrMidZ = halfPrismDepth + height / 2;
+          labelsGroup.add(createLabel(new THREE.Vector3(slMidX - labelOffsetSmall, yLabelOffset, slSrMidZ), `Sₗ: ${leftSide.toFixed(1)}`, '#008000'));
+          // Right slanted side (v5-v6 of geometry): midX = (hBW+hTW)/2, midZ = hD+H/2
+          const srMidX = (halfBottomWidth + halfTopWidth) / 2;
+          labelsGroup.add(createLabel(new THREE.Vector3(srMidX + labelOffsetSmall, yLabelOffset, slSrMidZ), `Sᵣ: ${rightSide.toFixed(1)}`, '#008000'));
+        }
+      }
+    }
+
+    // Face Labels (Unfolded)
+    if (labelConfig.showFaces) {
+      const faceLabelColor = '#333333';
+
+      // Bottom Face (Center X=0, Z=0)
+      labelsGroup.add(createLabel(new THREE.Vector3(0, yLabelOffset, 0), "Bottom", faceLabelColor, 'face-label'));
+
+      // Front Face (Center X=0, Z = halfPrismDepth + height/2)
+      labelsGroup.add(createLabel(new THREE.Vector3(0, yLabelOffset, halfPrismDepth + height / 2), "Front", faceLabelColor, 'face-label'));
+
+      // Top Face (Center X=0, Z = halfPrismDepth + height + prismDepth/2)
+      labelsGroup.add(createLabel(new THREE.Vector3(0, yLabelOffset, halfPrismDepth + height + prismDepth/2), "Top", faceLabelColor, 'face-label'));
+
+      // Back Face (Center X=0, Z = -halfPrismDepth - height/2)
+      labelsGroup.add(createLabel(new THREE.Vector3(0, yLabelOffset, -halfPrismDepth - height / 2), "Back", faceLabelColor, 'face-label'));
+
+      // Left Face (Center X = -halfBottomWidth - height/2, Z=0)
+      // The width of this unfolded rectangle is `height` (trapezoid height)
+      labelsGroup.add(createLabel(new THREE.Vector3(-halfBottomWidth - height/2, yLabelOffset, 0), "Left Side", faceLabelColor, 'face-label'));
+
+      // Right Face (Center X = halfBottomWidth + height/2, Z=0)
+      labelsGroup.add(createLabel(new THREE.Vector3(halfBottomWidth + height/2, yLabelOffset, 0), "Right Side", faceLabelColor, 'face-label'));
+    }
+  }
 }
 
 // Update createTrapezoidalPrismGeometry to store dimensions in userData
-function createTrapezoidalPrismGeometry(dimensions: TrapezoidalPrismDimensions, isUnfolded: boolean): THREE.BufferGeometry {
+export function createTrapezoidalPrismGeometry(dimensions: TrapezoidalPrismDimensions, isUnfolded: boolean): THREE.BufferGeometry {
   const { topWidth, bottomWidth, height, depth } = dimensions;
   
   let geometry: THREE.BufferGeometry;

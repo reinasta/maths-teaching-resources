@@ -1,4 +1,5 @@
 // src/components/NavigationHeader/index.tsx
+import React from 'react';
 import Link from 'next/link'
 
 export default function NavigationHeader() {

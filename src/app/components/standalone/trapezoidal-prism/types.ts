@@ -13,3 +13,9 @@ export interface TrapezoidalPrismCalculations {
   surfaceArea: number;
   volume: number;
 }
+
+export interface LabelConfig {
+  showVolume: boolean;
+  showSurfaceArea: boolean;
+  showFaces: boolean;
+}

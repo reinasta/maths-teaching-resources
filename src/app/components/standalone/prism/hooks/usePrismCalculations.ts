@@ -1,5 +1,12 @@
 import { useMemo } from 'react';
 import { PrismDimensions } from '../types';
+import { 
+  calculateTriangleArea, 
+  calculateTriangleHeight,
+  calculateVolume,
+  calculateSurfaceArea,
+  validateTriangleInequality
+} from '@/utils/geometry/triangularPrism';
 
 interface PrismCalculations {
   triangleHeight: number;
@@ -11,19 +18,20 @@ export function usePrismCalculations(dimensions: PrismDimensions): PrismCalculat
   return useMemo(() => {
     const { sideA, sideB, sideC, height } = dimensions;
 
-    // Calculate triangle height using Heron's formula
-    const s = (sideA + sideB + sideC) / 2; // semi-perimeter
-    const triangleArea = Math.sqrt(
-      s * (s - sideA) * (s - sideB) * (s - sideC)
-    );
-    const triangleHeight = (2 * triangleArea) / Math.max(sideA, sideB, sideC);
+    // Validate triangle using pure function
+    if (!validateTriangleInequality(sideA, sideB, sideC)) {
+      return {
+        triangleHeight: 0,
+        surfaceArea: 0,
+        volume: 0
+      };
+    }
 
-    // Calculate surface area
-    const lateralArea = (sideA + sideB + sideC) * height;
-    const surfaceArea = 2 * triangleArea + lateralArea;
-
-    // Calculate volume
-    const volume = triangleArea * height;
+    // Use pure calculation functions
+    const triangleArea = calculateTriangleArea(sideA, sideB, sideC);
+    const triangleHeight = calculateTriangleHeight(triangleArea, sideA, sideB, sideC);
+    const volume = calculateVolume(triangleArea, height);
+    const surfaceArea = calculateSurfaceArea(triangleArea, sideA, sideB, sideC, height);
 
     return {
       triangleHeight: Number(triangleHeight.toFixed(2)),

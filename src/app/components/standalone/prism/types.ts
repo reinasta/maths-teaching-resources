@@ -18,3 +18,10 @@ export interface TrapezoidalPrismDimensions {
   height: number;
   depth: number;
 }
+
+// Define and export LabelConfig
+export interface LabelConfig {
+  showVolume: boolean;
+  showSurfaceArea: boolean;
+  showFaces: boolean;
+}

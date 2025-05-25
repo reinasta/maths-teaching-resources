@@ -6,6 +6,7 @@ const Enlargement: React.FC = () => {
       <div>
         <h2 className="text-2xl font-semibold mb-4">Triangle Enlargement</h2>
         <video 
+          data-testid="enlargement-canvas"
           controls
           className="w-full rounded-lg shadow-lg"
           preload="metadata"

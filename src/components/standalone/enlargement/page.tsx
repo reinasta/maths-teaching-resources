@@ -1,6 +1,7 @@
 // src/app/components/standalone/enlargement/page.tsx
 'use client';
 
+import React from 'react';
 import StandaloneLayout from '@/components/StandaloneLayout';
 import { useState, useEffect } from 'react';
 

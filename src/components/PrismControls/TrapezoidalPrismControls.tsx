@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrapezoidalPrismDimensions, VisualStyle } from '../../app/components/standalone/trapezoidal-prism/types';
+import { TrapezoidalPrismDimensions, VisualStyle, LabelConfig } from '../../app/components/standalone/trapezoidal-prism/types';
 
 interface TrapezoidalPrismCalculations {
   leftSide: number;
@@ -15,7 +15,15 @@ interface TrapezoidalPrismControlsProps {
   dimensions: TrapezoidalPrismDimensions;
   calculations: TrapezoidalPrismCalculations;
   visualStyle: VisualStyle;
+  labelConfig?: LabelConfig;
+  onLabelConfigChange?: (config: LabelConfig) => void;
 }
+
+const DEFAULT_LABEL_CONFIG: LabelConfig = {
+  showVolume: true,
+  showSurfaceArea: false,
+  showFaces: false
+};
 
 const TrapezoidalPrismControls: React.FC<TrapezoidalPrismControlsProps> = ({ 
   dimensions, 
@@ -23,7 +31,9 @@ const TrapezoidalPrismControls: React.FC<TrapezoidalPrismControlsProps> = ({
   onDimensionsChange,
   onUnfoldChange,
   visualStyle,
-  onVisualStyleChange 
+  onVisualStyleChange,
+  labelConfig = DEFAULT_LABEL_CONFIG,
+  onLabelConfigChange
 }) => {
   const [isUnfolded, setIsUnfolded] = useState(false);
   
@@ -41,6 +51,15 @@ const TrapezoidalPrismControls: React.FC<TrapezoidalPrismControlsProps> = ({
 
   const handleStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onVisualStyleChange(event.target.value as VisualStyle);
+  };
+
+  const handleLabelConfigChange = (key: keyof LabelConfig) => {
+    if (onLabelConfigChange) {
+      onLabelConfigChange({
+        ...labelConfig,
+        [key]: !labelConfig[key]
+      });
+    }
   };
 
   return (
@@ -68,6 +87,41 @@ const TrapezoidalPrismControls: React.FC<TrapezoidalPrismControlsProps> = ({
               <option value="colored">Colored Faces</option>
               <option value="wireframe">Wireframe</option>
             </select>
+          </div>
+        </div>
+        
+        <div className="mb-4">
+          <h4 className="text-md font-semibold mb-2">Label Options</h4>
+          <div className="space-y-2">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={labelConfig.showVolume}
+                onChange={() => handleLabelConfigChange('showVolume')}
+                className="mr-2"
+              />
+              Volume Labels
+            </label>
+            
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={labelConfig.showSurfaceArea}
+                onChange={() => handleLabelConfigChange('showSurfaceArea')}
+                className="mr-2"
+              />
+              Surface Area Labels
+            </label>
+            
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={labelConfig.showFaces}
+                onChange={() => handleLabelConfigChange('showFaces')}
+                className="mr-2"
+              />
+              Face Labels
+            </label>
           </div>
         </div>
         

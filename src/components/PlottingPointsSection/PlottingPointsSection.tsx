@@ -102,6 +102,7 @@ const PlottingPointsSection: React.FC = () => {
         <div className="conversion-layout">
           <div 
             ref={containerRef} 
+            data-testid="plotting-points-section"
             className="graph-container"
           >
             <CoordinatePlane

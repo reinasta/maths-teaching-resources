@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import Prism from '@/components/Prism/Prism';
+import Prism, { VisualStyle } from '@/components/Prism/Prism';
 import PrismControls from './PrismControls';
-import { PrismDimensions } from './types';
+import { PrismDimensions, LabelConfig } from './types';
 import { usePrismCalculations } from './hooks/usePrismCalculations';
 import StandaloneLayout from '@/components/StandaloneLayout';
 import './styles.css';
+import LabelLegend from '../../../../components/LabelLegend/LabelLegend';
 
 const PrismPage: React.FC = () => {
   const [dimensions, setDimensions] = useState<PrismDimensions>({
@@ -16,6 +17,12 @@ const PrismPage: React.FC = () => {
     height: 3
   });
   const [isUnfolded, setIsUnfolded] = useState(false);
+  const [visualStyle, setVisualStyle] = useState<VisualStyle>('solid');
+  const [labelConfig, setLabelConfig] = useState<LabelConfig>({
+    showVolume: true,
+    showSurfaceArea: false,
+    showFaces: false
+  });
   
   const calculations = usePrismCalculations(dimensions);
 
@@ -27,7 +34,10 @@ const PrismPage: React.FC = () => {
           <Prism 
             dimensions={dimensions}
             isUnfolded={isUnfolded}
+            visualStyle={visualStyle}
+            labelConfig={labelConfig}
           />
+          <LabelLegend labelConfig={labelConfig} />
         </div>
         <div className="controls-container">
           <PrismControls
@@ -35,6 +45,10 @@ const PrismPage: React.FC = () => {
             calculations={calculations}
             onDimensionsChange={setDimensions}
             onUnfoldChange={setIsUnfolded}
+            visualStyle={visualStyle}
+            onVisualStyleChange={(style: string) => setVisualStyle(style as VisualStyle)}
+            labelConfig={labelConfig}
+            onLabelConfigChange={setLabelConfig}
           />
         </div>
       </div>

@@ -35,7 +35,7 @@ export default function ConversionSlidesPage() {
   }, []);
 
   return (
-    <div className="reveal" style={{ fontFamily: 'var(--main-font)' }}>
+    <div className="reveal" data-testid="reveal-container" style={{ fontFamily: 'var(--main-font)' }}>
       <div className="slides conversion-wrapper">
         {/* Title Slide */}
         <section className="conversion-layout">

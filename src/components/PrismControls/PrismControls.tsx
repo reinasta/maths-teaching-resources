@@ -1,12 +1,5 @@
-// src/components/PrismControls/PrismControls.tsx
 import React, { useState } from 'react';
-
-interface PrismDimensions {
-  sideA: number;
-  sideB: number;
-  sideC: number;
-  height: number;
-}
+import { PrismDimensions, VisualStyle, LabelConfig } from '../Prism/Prism';
 
 interface PrismCalculations {
   triangleHeight: number;
@@ -17,16 +10,32 @@ interface PrismCalculations {
 interface PrismControlsProps {
   onDimensionsChange: (dimensions: PrismDimensions) => void;
   onUnfoldChange: (isUnfolded: boolean) => void;
+  onVisualStyleChange: (style: VisualStyle) => void;
+  onLabelConfigChange?: (config: LabelConfig) => void; // Add this prop
   dimensions: PrismDimensions;
   calculations: PrismCalculations;
+  visualStyle: VisualStyle;
+  labelConfig?: LabelConfig; // Add this prop
 }
+
+// Default label config in case it's not provided
+const DEFAULT_LABEL_CONFIG: LabelConfig = {
+  showVolume: true,
+  showSurfaceArea: false,
+  showFaces: false
+};
 
 const PrismControls: React.FC<PrismControlsProps> = ({ 
   dimensions, 
   calculations, 
   onDimensionsChange,
-  onUnfoldChange 
+  onUnfoldChange,
+  visualStyle,
+  onVisualStyleChange,
+  onLabelConfigChange,
+  labelConfig = DEFAULT_LABEL_CONFIG // Default if not provided
 }) => {
+  console.log("Label config in PrismControls:", labelConfig);
   const [isUnfolded, setIsUnfolded] = useState(false);
   
   const handleUnfoldToggle = () => {
@@ -34,14 +43,6 @@ const PrismControls: React.FC<PrismControlsProps> = ({
     setIsUnfolded(newUnfoldState);
     onUnfoldChange(newUnfoldState);
   };
-
-  //const calculateTriangleHeight = useCallback((a: number, b: number, c: number): number => {
-  //  // Using Heron's formula
-  //  const s = (a + b + c) / 2; // semi-perimeter
-  //  const area = Math.sqrt(s * (s - a) * (s - b) * (s - c));
-  //  const base = Math.max(a, b, c); // Use longest side as base
-  //  return (2 * area) / base;
-  //}, []);
 
   const handleInputChange = (key: keyof PrismDimensions) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
@@ -51,6 +52,19 @@ const PrismControls: React.FC<PrismControlsProps> = ({
     const { sideA, sideB, sideC } = newDimensions;
     if (isValidTriangle(sideA, sideB, sideC)) {
       onDimensionsChange(newDimensions);
+    }
+  };
+
+  const handleStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    onVisualStyleChange(event.target.value as VisualStyle);
+  };
+
+  const handleLabelConfigChange = (key: keyof LabelConfig) => {
+    if (onLabelConfigChange) {
+      onLabelConfigChange({
+        ...labelConfig,
+        [key]: !labelConfig[key]
+      });
     }
   };
 
@@ -65,13 +79,29 @@ const PrismControls: React.FC<PrismControlsProps> = ({
   return (
     <div className="controls-container">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-3">Prism Controls</h3>
-        <button
-          onClick={handleUnfoldToggle}
-          className="w-full mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          {isUnfolded ? 'Fold Prism' : 'Unfold Prism'}
-        </button>
+        <h3 className="text-lg font-semibold mb-3">Triangular Prism Controls</h3>
+        <div className="mb-4 flex flex-col space-y-2">
+          <button
+            onClick={handleUnfoldToggle}
+            className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            {isUnfolded ? 'Fold Prism' : 'Unfold Prism'}
+          </button>
+          
+          <div className="visual-style-selector">
+            <label htmlFor="visualStyle" className="block text-sm font-medium mb-1">Visual Style:</label>
+            <select
+              id="visualStyle"
+              value={visualStyle}
+              onChange={handleStyleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="solid">Solid</option>
+              <option value="colored">Colored Faces</option>
+              <option value="wireframe">Wireframe</option>
+            </select>
+          </div>
+        </div>
         
         <h4 className="text-md font-semibold mb-3">Dimensions</h4>
         <div className="space-y-4">
@@ -133,20 +163,55 @@ const PrismControls: React.FC<PrismControlsProps> = ({
         </div>
       </div>
 
+      <div className="mb-4">
+        <h4 className="text-md font-semibold mb-2">Labels</h4>
+        <div className="space-y-2">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={labelConfig.showVolume}
+              onChange={() => handleLabelConfigChange('showVolume')}
+              className="mr-2"
+            />
+            Volume Labels
+          </label>
+          
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={labelConfig.showSurfaceArea}
+              onChange={() => handleLabelConfigChange('showSurfaceArea')}
+              className="mr-2"
+            />
+            Surface Area Labels
+          </label>
+          
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={labelConfig.showFaces}
+              onChange={() => handleLabelConfigChange('showFaces')}
+              className="mr-2"
+            />
+            Face Labels
+          </label>
+        </div>
+      </div>
+
       <div className="calculations">
         <h3 className="text-lg font-semibold mb-3">Calculations</h3>
         <div className="space-y-2">
           <div className="calculation-row">
             <span>Triangle Height:</span>
-            <span className="font-mono">{calculations.triangleHeight} units</span>
+            <span className="font-mono">{calculations.triangleHeight.toFixed(2)} units</span>
           </div>
           <div className="calculation-row">
             <span>Surface Area:</span>
-            <span className="font-mono">{calculations.surfaceArea} sq units</span>
+            <span className="font-mono">{calculations.surfaceArea.toFixed(2)} sq units</span>
           </div>
           <div className="calculation-row">
             <span>Volume:</span>
-            <span className="font-mono">{calculations.volume} cubic units</span>
+            <span className="font-mono">{calculations.volume.toFixed(2)} cubic units</span>
           </div>
         </div>
       </div>

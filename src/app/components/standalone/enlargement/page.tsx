@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Enlargement from '@/components/Enlargement';
 import StandaloneLayout from '@/components/StandaloneLayout';
 

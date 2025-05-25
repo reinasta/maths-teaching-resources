@@ -1,5 +1,16 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
+import {
+  calculateCoordinatePlaneMargins,
+  calculateResponsiveFontSize,
+  calculateInnerDimensions,
+  createScaleConfig,
+  calculateResponsiveTickSizes,
+  generateGridLines,
+  calculateAxisLabelPositions,
+  calculateViewBox,
+  type DimensionConfig
+} from '@/utils/d3/coordinateCalculations';
 
 interface CoordinatePlaneProps {
   width?: number;
@@ -23,54 +34,57 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
   useEffect(() => {
     if (!svgRef.current) return;
 
-    // Calculate responsive margins and font sizes
-    const margin = {
-      top: Math.max(45, height * 0.1),
-      right: Math.max(25, width * 0.05),
-      bottom: Math.max(50, height * 0.12),
-      left: Math.max(50, width * 0.1)
-    };
+    // Create dimension configuration
+    const dimensions: DimensionConfig = { width, height };
 
-    const baseFontSize = Math.min(width, height) * 0.025;
-    
-    // Define grid lines
-    const gridLines = {
-      x: d3.range(0, 11, 1),
-      y: d3.range(0, 31, 5)
-    };
+    // Calculate responsive dimensions and styling using pure functions
+    const margins = calculateCoordinatePlaneMargins(width, height);
+    const baseFontSize = calculateResponsiveFontSize(width, height);
+    const innerDimensions = calculateInnerDimensions(dimensions, margins);
 
-    // Define axis labels
-    const axisLabels = {
-      x: 'x',
-      y: 'y'
-    };
+    // Create scale configurations
+    const xScaleConfig = createScaleConfig(0, 10, 0, innerDimensions.width);
+    const yScaleConfig = createScaleConfig(0, 30, innerDimensions.height, 0);
+
+    // Generate grid lines
+    const gridLines = generateGridLines(0, 10, 1, 0, 30, 5);
+
+    // Calculate responsive tick sizes
+    const tickSizes = calculateResponsiveTickSizes(width, height);
+
+    // Calculate axis label positions
+    const axisLabels = calculateAxisLabelPositions(
+      innerDimensions,
+      margins,
+      baseFontSize,
+      'x',
+      'y'
+    );
 
     // Clear previous content
     d3.select(svgRef.current).selectAll('*').remove();
 
     // Set up SVG with viewBox for better responsiveness
+    const viewBoxValue = calculateViewBox(width, height);
     const svg = d3.select(svgRef.current)
-      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('viewBox', viewBoxValue)
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .style('width', '100%')
       .style('height', 'auto');
 
     const g = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      .attr('transform', `translate(${margins.left},${margins.top})`);
 
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    // Create scales
+    // Create scales using configurations
     const xScale = d3.scaleLinear()
-      .domain([0, 10])
-      .range([0, innerWidth]);
+      .domain([xScaleConfig.domainMin, xScaleConfig.domainMax])
+      .range([xScaleConfig.rangeMin, xScaleConfig.rangeMax]);
 
     const yScale = d3.scaleLinear()
-      .domain([0, 30])
-      .range([innerHeight, 0]);
+      .domain([yScaleConfig.domainMin, yScaleConfig.domainMax])
+      .range([yScaleConfig.rangeMin, yScaleConfig.rangeMax]);
 
-    // Add grid
+    // Add grid using generated grid lines
     g.selectAll('.vertical-grid')
       .data(gridLines.x)
       .enter()
@@ -79,7 +93,7 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .attr('x1', d => xScale(d))
       .attr('x2', d => xScale(d))
       .attr('y1', 0)
-      .attr('y2', innerHeight);
+      .attr('y2', innerDimensions.height);
 
     g.selectAll('.horizontal-grid')
       .data(gridLines.y)
@@ -87,26 +101,22 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
       .append('line')
       .attr('class', 'grid-line')
       .attr('x1', 0)
-      .attr('x2', innerWidth)
+      .attr('x2', innerDimensions.width)
       .attr('y1', d => yScale(d))
       .attr('y2', d => yScale(d));
 
-    // Calculate responsive tick sizes
-    const tickSize = Math.min(12, Math.max(6, width * 0.015));
-    const tickPadding = Math.min(12, Math.max(6, width * 0.015));
-
     // Add axes with responsive sizes
     const xAxis = d3.axisBottom(xScale)
-      .tickSize(tickSize)
-      .tickPadding(tickPadding);
+      .tickSize(tickSizes.tickSize)
+      .tickPadding(tickSizes.tickPadding);
     
     const yAxis = d3.axisLeft(yScale)
-      .tickSize(tickSize)
-      .tickPadding(tickPadding);
+      .tickSize(tickSizes.tickSize)
+      .tickPadding(tickSizes.tickPadding);
 
     const xAxisGroup = g.append('g')
       .attr('class', 'x-axis')
-      .attr('transform', `translate(0,${innerHeight})`)
+      .attr('transform', `translate(0,${innerDimensions.height})`)
       .call(xAxis);
 
     const yAxisGroup = g.append('g')
@@ -120,23 +130,23 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
     yAxisGroup.selectAll('.tick text')
       .style('font-size', `${baseFontSize}px`);
 
-    // Add axis labels
+    // Add axis labels using calculated positions
     g.append('text')
       .attr('class', 'axis-label')
       .attr('text-anchor', 'middle')
-      .attr('x', innerWidth / 2)
-      .attr('y', innerHeight + margin.bottom - (baseFontSize / 2))
+      .attr('x', axisLabels.xPosition.x)
+      .attr('y', axisLabels.xPosition.y)
       .style('font-size', `${baseFontSize * 1.2}px`)
-      .text(axisLabels.x);
+      .text(axisLabels.xLabel);
 
     g.append('text')
       .attr('class', 'axis-label')
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
-      .attr('x', -innerHeight / 2)
-      .attr('y', -margin.left + (baseFontSize * 2))
+      .attr('x', axisLabels.yPosition.x)
+      .attr('y', axisLabels.yPosition.y)
       .style('font-size', `${baseFontSize * 1.2}px`)
-      .text(axisLabels.y);
+      .text(axisLabels.yLabel);
 
     // Update point rendering
     const pointGroups = g.selectAll('.point-group')
@@ -183,6 +193,7 @@ const CoordinatePlane: React.FC<CoordinatePlaneProps> = ({
 
   return (
     <svg 
+      data-testid="coordinate-plane-canvas"
       ref={svgRef}
       className={`coordinate-plane ${className}`}
       aria-label="Coordinate plane with plotted points"

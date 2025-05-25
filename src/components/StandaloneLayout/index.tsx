@@ -1,4 +1,5 @@
 // src/components/StandaloneLayout/index.tsx
+import React from 'react';
 import NavigationHeader from '../NavigationHeader'
 
 interface StandaloneLayoutProps {

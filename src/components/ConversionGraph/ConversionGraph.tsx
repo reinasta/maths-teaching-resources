@@ -1,6 +1,15 @@
 // src/components/ConversionGraph/ConversionGraph.tsx
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
+import {
+  calculateConversionGraphMargins,
+  calculateResponsiveFontSize,
+  calculateInnerDimensions,
+  createScaleConfig,
+  calculateAxisLabelPositions,
+  calculateViewBox,
+  generateGridLines
+} from '@/utils/d3/coordinateCalculations';
 
 interface ConversionGraphProps {
   className?: string;
@@ -16,7 +25,7 @@ interface ConversionData {
   direction: ConversionDirection;
 }
 
-const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => {
+const ConversionGraph: React.FC<ConversionGraphProps> = ({ className: _className = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -67,37 +76,49 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => 
   useEffect(() => {
     if (!svgRef.current || dimensions.width === 0) return;
 
-    // Calculate responsive margins and font sizes
-    const margin = {
-      top: Math.max(40, dimensions.height * 0.1),
-      right: Math.max(20, dimensions.width * 0.05),
-      bottom: Math.max(40, dimensions.height * 0.1),
-      left: Math.max(40, dimensions.width * 0.08)
-    };
+    // Calculate responsive dimensions and styling using pure functions
+    const margins = calculateConversionGraphMargins(dimensions.width, dimensions.height);
+    const baseFontSize = calculateResponsiveFontSize(dimensions.width, dimensions.height);
+    const innerDimensions = calculateInnerDimensions(dimensions, margins);
 
-    const baseFontSize = Math.min(dimensions.width, dimensions.height) * 0.025;
+    // Create scale configurations
+    const xScaleConfig = createScaleConfig(0, 10, 0, innerDimensions.width);
+    const yScaleConfig = createScaleConfig(0, 25, innerDimensions.height, 0);
+
+    // Generate grid lines
+    const gridLines = generateGridLines(0, gridConfig.xTicks, gridConfig.xStep, 0, 25, gridConfig.yStep);
+
+    // Calculate axis label positions
+    const axisLabels = calculateAxisLabelPositions(
+      innerDimensions,
+      margins,
+      baseFontSize,
+      'inches',
+      'centimetres'
+    );
 
     // Clear previous content
     d3.select(svgRef.current).selectAll("*").remove();
 
     // Set up SVG with viewBox
+    const viewBoxValue = calculateViewBox(dimensions.width, dimensions.height);
     const svg = d3.select(svgRef.current)
-      .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`)
+      .attr("viewBox", viewBoxValue)
       .attr("preserveAspectRatio", "xMidYMid meet")
       .style("width", "100%")
       .style("height", "auto");
 
     const g = svg.append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
+      .attr("transform", `translate(${margins.left},${margins.top})`);
 
-    // Create scales
+    // Create scales using configurations
     const xScale = d3.scaleLinear()
-      .domain([0, 10])
-      .range([0, dimensions.width - margin.left - margin.right]);
+      .domain([xScaleConfig.domainMin, xScaleConfig.domainMax])
+      .range([xScaleConfig.rangeMin, xScaleConfig.rangeMax]);
 
     const yScale = d3.scaleLinear()
-      .domain([0, 25])
-      .range([dimensions.height - margin.top - margin.bottom, 0]);
+      .domain([yScaleConfig.domainMin, yScaleConfig.domainMax])
+      .range([yScaleConfig.rangeMin, yScaleConfig.rangeMax]);
 
     // Add axes
     const xAxis = d3.axisBottom(xScale);
@@ -105,7 +126,7 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => 
 
     const xAxisGroup = g.append("g")
       .attr("class", "x-axis")
-      .attr("transform", `translate(0,${dimensions.height - margin.top - margin.bottom})`)
+      .attr("transform", `translate(0,${innerDimensions.height})`)
       .call(xAxis);
 
     const yAxisGroup = g.append("g")
@@ -118,44 +139,44 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => 
     yAxisGroup.selectAll('.tick text')
       .style('font-size', `${baseFontSize}px`);
 
-    // Add axis labels with adjusted positions
+    // Add axis labels using calculated positions
     g.append("text")
       .attr("class", "axis-label")
       .attr("text-anchor", "middle")
-      .attr("x", (dimensions.width - margin.left - margin.right) / 2)
-      .attr("y", dimensions.height - margin.top - margin.bottom + baseFontSize * 4)
+      .attr("x", axisLabels.xPosition.x)
+      .attr("y", axisLabels.xPosition.y)
       .style('font-size', `${baseFontSize}px`)
-      .text("inches");
+      .text(axisLabels.xLabel);
 
     g.append("text")
       .attr("class", "axis-label")
       .attr("text-anchor", "middle")
       .attr("transform", "rotate(-90)")
-      .attr("x", -(dimensions.height - margin.top - margin.bottom) / 2)
-      .attr("y", -margin.left + baseFontSize)
+      .attr("x", axisLabels.yPosition.x)
+      .attr("y", axisLabels.yPosition.y)
       .style('font-size', `${baseFontSize}px`)
-      .text("centimetres");
+      .text(axisLabels.yLabel);
 
-    // Add grid
+    // Add grid using generated grid lines
     // Vertical grid lines
     g.selectAll(".vertical-grid")
-      .data(d3.range(0, gridConfig.xTicks + 1))
+      .data(gridLines.x)
       .enter()
       .append("line")
       .attr("class", "grid-line")
       .attr("x1", d => xScale(d))
       .attr("x2", d => xScale(d))
       .attr("y1", 0)
-      .attr("y2", dimensions.height - margin.top - margin.bottom);
+      .attr("y2", innerDimensions.height);
 
     // Horizontal grid lines
     g.selectAll(".horizontal-grid")
-      .data(d3.range(0, 26, gridConfig.yStep))
+      .data(gridLines.y)
       .enter()
       .append("line")
       .attr("class", "grid-line")
       .attr("x1", 0)
-      .attr("x2", dimensions.width - margin.left - margin.right)
+      .attr("x2", innerDimensions.width)
       .attr("y1", d => yScale(d))
       .attr("y2", d => yScale(d));
 
@@ -240,7 +261,7 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => 
       .duration(500)
       .style("opacity", 1);
 
-  }, [dimensions, conversionData, animationKey, gridConfig.xTicks, gridConfig.yStep]);
+  }, [dimensions, conversionData, animationKey, gridConfig.xTicks, gridConfig.xStep, gridConfig.yStep]);
 
   return (
     // Remove the extra wrapper div that's adding spacing
@@ -249,10 +270,11 @@ const ConversionGraph: React.FC<ConversionGraphProps> = ({ className = '' }) => 
         ref={containerRef} 
         className="graph-container"
       >
-        <svg 
+        <svg
+          data-testid="conversion-graph-canvas"
           ref={svgRef}
-          className={`coordinate-plane ${className}`}
           aria-label="Conversion graph between inches and centimetres"
+          className="coordinate-plane "
         />
       </div>
       <div className="controls-container">

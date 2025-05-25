@@ -13,22 +13,47 @@ interface PrismCalculations {
   volume: number;
 }
 
+// Add LabelConfig interface
+interface LabelConfig {
+  showVolume: boolean;
+  showSurfaceArea: boolean;
+  showFaces: boolean;
+}
+
 interface PrismControlsProps {
   dimensions: PrismDimensions;
   calculations: PrismCalculations;
   onDimensionsChange: (dimensions: PrismDimensions) => void;
   onUnfoldChange: (isUnfolded: boolean) => void;
+  visualStyle?: string;
+  onVisualStyleChange?: (style: string) => void;
+  // Add the new props
+  labelConfig?: LabelConfig;
+  onLabelConfigChange?: (config: LabelConfig) => void;
 }
+
+// Default label config
+const DEFAULT_LABEL_CONFIG: LabelConfig = {
+  showVolume: true,
+  showSurfaceArea: false,
+  showFaces: false
+};
 
 const PrismControls: React.FC<PrismControlsProps> = ({
   dimensions,
   calculations,
   onDimensionsChange,
-  onUnfoldChange
+  onUnfoldChange,
+  visualStyle = 'solid',
+  onVisualStyleChange,
+  // Add defaults and destructure new props
+  labelConfig = DEFAULT_LABEL_CONFIG,
+  onLabelConfigChange
 }) => {
   const [showMeasurements, setShowMeasurements] = useState(true);
   const [isUnfolded, setIsUnfolded] = useState(false);
 
+  // Existing handlers...
   const handleInputChange = (key: keyof PrismDimensions) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
     const newDimensions = { ...dimensions, [key]: newValue };
@@ -39,6 +64,22 @@ const PrismControls: React.FC<PrismControlsProps> = ({
     const newUnfoldState = !isUnfolded;
     setIsUnfolded(newUnfoldState);
     onUnfoldChange(newUnfoldState);
+  };
+
+  const handleStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (onVisualStyleChange) {
+      onVisualStyleChange(event.target.value);
+    }
+  };
+
+  // Add handler for label config changes
+  const handleLabelConfigChange = (key: keyof LabelConfig) => {
+    if (onLabelConfigChange) {
+      onLabelConfigChange({
+        ...labelConfig,
+        [key]: !labelConfig[key]
+      });
+    }
   };
 
   return (
@@ -52,6 +93,21 @@ const PrismControls: React.FC<PrismControlsProps> = ({
           >
             {isUnfolded ? 'Fold Prism' : 'Unfold Prism'}
           </button>
+        </div>
+
+        {/* Add Visual Style Selector */}
+        <div className="mb-4">
+          <label htmlFor="visualStyle" className="block text-sm font-medium mb-1">Visual Style:</label>
+          <select
+            id="visualStyle"
+            value={visualStyle}
+            onChange={handleStyleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="solid">Solid</option>
+            <option value="colored">Colored Faces</option>
+            <option value="wireframe">Wireframe</option>
+          </select>
         </div>
 
         <h3 className="text-lg font-semibold mb-3">Prism Dimensions</h3>
@@ -115,6 +171,42 @@ const PrismControls: React.FC<PrismControlsProps> = ({
             />
             <span className="font-mono w-12 text-right">{dimensions.height}</span>
           </div>
+        </div>
+      </div>
+
+      {/* Add the label controls section */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-3">Label Options</h3>
+        <div className="space-y-2">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={labelConfig.showVolume}
+              onChange={() => handleLabelConfigChange('showVolume')}
+              className="mr-2"
+            />
+            Volume Labels
+          </label>
+          
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={labelConfig.showSurfaceArea}
+              onChange={() => handleLabelConfigChange('showSurfaceArea')}
+              className="mr-2"
+            />
+            Surface Area Labels
+          </label>
+          
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={labelConfig.showFaces}
+              onChange={() => handleLabelConfigChange('showFaces')}
+              className="mr-2"
+            />
+            Face Labels
+          </label>
         </div>
       </div>
 
