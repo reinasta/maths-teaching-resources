@@ -1,13 +1,7 @@
 // src/app/layout.tsx
+import React from 'react'
 import type { Metadata } from 'next'
-import { Fira_Sans } from 'next/font/google'
 import './globals.css'
-
-const fira = Fira_Sans({ 
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-fira'
-})
 
 export const metadata: Metadata = {
   title: 'Mathematics Teaching Resources',
@@ -21,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${fira.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import TrapezoidalPrism, { createTrapezoidalPrismGeometry } from './TrapezoidalPrism';
+import TrapezoidalPrism from './TrapezoidalPrism';
+import { createTrapezoidalPrismGeometry } from '../../utils/threejs/geometryCalculations';
 jest.mock('three');
 
 describe('TrapezoidalPrism 3D Visualisation', () => {

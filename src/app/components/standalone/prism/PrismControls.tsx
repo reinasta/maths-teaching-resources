@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
-
-interface PrismDimensions {
-  sideA: number;
-  sideB: number;
-  sideC: number;
-  height: number;
-}
+import { 
+  updateTriangularPrismDimensions, 
+  updateLabelConfig,
+  sanitizeDimensionInput,
+  type PrismDimensions,
+  type LabelConfig
+} from '../../../../utils/state/prismState';
 
 interface PrismCalculations {
   triangleHeight: number;
   surfaceArea: number;
   volume: number;
-}
-
-// Add LabelConfig interface
-interface LabelConfig {
-  showVolume: boolean;
-  showSurfaceArea: boolean;
-  showFaces: boolean;
 }
 
 interface PrismControlsProps {
@@ -55,9 +48,14 @@ const PrismControls: React.FC<PrismControlsProps> = ({
 
   // Existing handlers...
   const handleInputChange = (key: keyof PrismDimensions) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(event.target.value);
-    const newDimensions = { ...dimensions, [key]: newValue };
-    onDimensionsChange(newDimensions);
+    const sanitizedValue = sanitizeDimensionInput(event.target.value, 0.5, 5);
+    const updates = { [key]: sanitizedValue };
+    
+    const result = updateTriangularPrismDimensions(dimensions, updates);
+    if (result.isValid) {
+      onDimensionsChange(result.dimensions);
+    }
+    // If invalid, dimensions remain unchanged (current dimensions are returned)
   };
 
   const handleUnfoldToggle = () => {
@@ -75,10 +73,8 @@ const PrismControls: React.FC<PrismControlsProps> = ({
   // Add handler for label config changes
   const handleLabelConfigChange = (key: keyof LabelConfig) => {
     if (onLabelConfigChange) {
-      onLabelConfigChange({
-        ...labelConfig,
-        [key]: !labelConfig[key]
-      });
+      const updatedConfig = updateLabelConfig(labelConfig, { [key]: !labelConfig[key] });
+      onLabelConfigChange(updatedConfig);
     }
   };
 

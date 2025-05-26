@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-fira)', 'sans-serif'],
-        mono: ['var(--font-fira-code)', 'monospace'],
+        sans: ['var(--main-font)', 'sans-serif'],
+        mono: ['var(--mono-font)', 'monospace'],
       },
       colors: {
         primary: 'var(--primary-color)',

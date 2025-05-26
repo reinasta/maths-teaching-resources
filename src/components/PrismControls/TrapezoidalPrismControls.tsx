@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { TrapezoidalPrismDimensions, VisualStyle, LabelConfig } from '../../app/components/standalone/trapezoidal-prism/types';
+import { 
+  updateTrapezoidalPrismDimensions, 
+  sanitizeDimensionInput
+} from '../../utils/state/prismState';
 
 interface TrapezoidalPrismCalculations {
   leftSide: number;
@@ -44,9 +48,14 @@ const TrapezoidalPrismControls: React.FC<TrapezoidalPrismControlsProps> = ({
   };
 
   const handleInputChange = (key: keyof TrapezoidalPrismDimensions) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(event.target.value);
-    const newDimensions = { ...dimensions, [key]: newValue };
-    onDimensionsChange(newDimensions);
+    const sanitizedValue = sanitizeDimensionInput(event.target.value, 0.5, 5);
+    const updates = { [key]: sanitizedValue };
+    
+    const result = updateTrapezoidalPrismDimensions(dimensions, updates);
+    if (result.isValid) {
+      onDimensionsChange(result.dimensions);
+    }
+    // If invalid, dimensions remain unchanged (current dimensions are returned)
   };
 
   const handleStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

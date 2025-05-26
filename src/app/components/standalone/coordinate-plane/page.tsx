@@ -1,6 +1,7 @@
 // src/app/components/standalone/coordinate-plane/page.tsx
 'use client';
 
+import React from 'react';
 import PlottingPointsSection from '@/components/PlottingPointsSection';
 import StandaloneLayout from '@/components/StandaloneLayout';
 

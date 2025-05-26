@@ -1,6 +1,7 @@
 // src/app/components/standalone/conversion-graph/page.tsx
 'use client';
 
+import React from 'react';
 import ConversionGraph from '@/components/ConversionGraph';
 import StandaloneLayout from '@/components/StandaloneLayout';
 

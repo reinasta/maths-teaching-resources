@@ -43,21 +43,32 @@ const THREE = {
     toJSON: jest.fn(),
   })),
   BoxGeometry: jest.fn(),
-  Matrix4: jest.fn().mockImplementation(() => ({
-    set: jest.fn(),
-    multiply: jest.fn(),
-    getInverse: jest.fn(),
-    makeRotationFromQuaternion: jest.fn(),
-    copy: jest.fn(),
-    clone: jest.fn(),
-    invert: jest.fn(),
-    multiplyMatrices: jest.fn(),
-    decompose: jest.fn(),
-    compose: jest.fn(),
-    identity: jest.fn(),
-    lookAt: jest.fn(),
-    elements: [],
-  })),
+  Matrix4: jest.fn(function Matrix4() {
+    this.set = jest.fn(() => this);
+    this.multiply = jest.fn(() => this);
+    this.getInverse = jest.fn(() => this);
+    this.makeRotationFromQuaternion = jest.fn(() => this);
+    this.copy = jest.fn(() => this);
+    this.clone = jest.fn(() => new THREE.Matrix4());
+    this.invert = jest.fn(() => this);
+    this.multiplyMatrices = jest.fn(() => this);
+    this.decompose = jest.fn(() => this);
+    this.compose = jest.fn(() => this);
+    this.identity = jest.fn(() => this);
+    this.lookAt = jest.fn(() => this);
+    this.makeRotationY = jest.fn(() => this);
+    this.makeRotationX = jest.fn(() => this);
+    this.makeRotationZ = jest.fn(() => this);
+    this.setPosition = jest.fn(() => this);
+    this.makeTranslation = jest.fn(() => this);
+    this.elements = [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+    ];
+    return this;
+  }),
   Vector3: jest.fn().mockImplementation((x = 0, y = 0, z = 0) => ({
     x, y, z,
     set: jest.fn(function(x, y, z) {
@@ -316,6 +327,9 @@ const THREE = {
       this.index = index;
       return this;
     }),
+    getIndex: jest.fn(function() {
+      return this.index;
+    }),
     getAttribute: jest.fn(function(name) {
       return this.attributes ? this.attributes[name] : undefined;
     }),
@@ -323,16 +337,41 @@ const THREE = {
       // Mock implementation that returns the geometry for chaining
       return this;
     }),
-    computeVertexNormals: jest.fn(),
-    computeBoundingBox: jest.fn(),
+    computeVertexNormals: jest.fn(function() {
+      // Mock implementation that creates a normal attribute
+      if (this.attributes && this.attributes.position) {
+        const positionCount = this.attributes.position.count;
+        const normalArray = new Array(positionCount * 3).fill(0);
+        this.attributes.normal = {
+          array: normalArray,
+          count: positionCount,
+          itemSize: 3
+        };
+      }
+      return this;
+    }),
+    computeBoundingBox: jest.fn(function() {
+      this.boundingBox = {
+        min: { x: -1, y: -1, z: -1 },
+        max: { x: 1, y: 1, z: 1 }
+      };
+      return this;
+    }),
     computeBoundingSphere: jest.fn(),
-    addGroup: jest.fn(),
+    addGroup: jest.fn(function(start, count, materialIndex) {
+      this.groups = this.groups || [];
+      this.groups.push({ start, count, materialIndex });
+      return this;
+    }),
     clone: jest.fn(),
     copy: jest.fn(),
     dispose: jest.fn(),
     toJSON: jest.fn(),
     attributes: {},
     index: null,
+    groups: [],
+    userData: {},
+    boundingBox: null,
   })),
   Float32BufferAttribute: jest.fn().mockImplementation((array, itemSize) => ({
     array,

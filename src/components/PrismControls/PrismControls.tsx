@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { PrismDimensions, VisualStyle, LabelConfig } from '../Prism/Prism';
+import { 
+  updateTriangularPrismDimensions, 
+  updateLabelConfig,
+  sanitizeDimensionInput
+} from '../../utils/state/prismState';
 
 interface PrismCalculations {
   triangleHeight: number;
@@ -35,7 +40,6 @@ const PrismControls: React.FC<PrismControlsProps> = ({
   onLabelConfigChange,
   labelConfig = DEFAULT_LABEL_CONFIG // Default if not provided
 }) => {
-  console.log("Label config in PrismControls:", labelConfig);
   const [isUnfolded, setIsUnfolded] = useState(false);
   
   const handleUnfoldToggle = () => {
@@ -45,14 +49,14 @@ const PrismControls: React.FC<PrismControlsProps> = ({
   };
 
   const handleInputChange = (key: keyof PrismDimensions) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(event.target.value);
-    const newDimensions = { ...dimensions, [key]: newValue };
+    const sanitizedValue = sanitizeDimensionInput(event.target.value, 0.5, 5);
+    const updates = { [key]: sanitizedValue };
     
-    // Validate triangle inequality theorem
-    const { sideA, sideB, sideC } = newDimensions;
-    if (isValidTriangle(sideA, sideB, sideC)) {
-      onDimensionsChange(newDimensions);
+    const result = updateTriangularPrismDimensions(dimensions, updates);
+    if (result.isValid) {
+      onDimensionsChange(result.dimensions);
     }
+    // If invalid, dimensions remain unchanged (current dimensions are returned)
   };
 
   const handleStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -61,19 +65,9 @@ const PrismControls: React.FC<PrismControlsProps> = ({
 
   const handleLabelConfigChange = (key: keyof LabelConfig) => {
     if (onLabelConfigChange) {
-      onLabelConfigChange({
-        ...labelConfig,
-        [key]: !labelConfig[key]
-      });
+      const updatedConfig = updateLabelConfig(labelConfig, { [key]: !labelConfig[key] });
+      onLabelConfigChange(updatedConfig);
     }
-  };
-
-  const isValidTriangle = (a: number, b: number, c: number): boolean => {
-    return (
-      a + b > c &&
-      b + c > a &&
-      c + a > b
-    );
   };
 
   return (
