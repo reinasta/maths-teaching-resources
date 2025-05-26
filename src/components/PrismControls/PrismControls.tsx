@@ -5,6 +5,10 @@ import {
   updateLabelConfig,
   sanitizeDimensionInput
 } from '../../utils/state/prismState';
+import DimensionControl from './DimensionControl';
+import LabelConfigControl from './LabelConfigControl';
+import VisualStyleSelector from './VisualStyleSelector';
+import CalculationsDisplay from './CalculationsDisplay';
 
 interface PrismCalculations {
   triangleHeight: number;
@@ -74,88 +78,31 @@ const PrismControls: React.FC<PrismControlsProps> = ({
     <div className="controls-container">
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-3">Triangular Prism Controls</h3>
-        <div className="mb-4 flex flex-col space-y-2">
-          <button
-            onClick={handleUnfoldToggle}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          >
-            {isUnfolded ? 'Fold Prism' : 'Unfold Prism'}
-          </button>
-          
-          <div className="visual-style-selector">
-            <label htmlFor="visualStyle" className="block text-sm font-medium mb-1">Visual Style:</label>
-            <select
-              id="visualStyle"
-              value={visualStyle}
-              onChange={handleStyleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="solid">Solid</option>
-              <option value="colored">Colored Faces</option>
-              <option value="wireframe">Wireframe</option>
-            </select>
-          </div>
-        </div>
+        <button
+          onClick={handleUnfoldToggle}
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors mb-4"
+        >
+          {isUnfolded ? 'Fold Prism' : 'Unfold Prism'}
+        </button>
+        
+        <VisualStyleSelector visualStyle={visualStyle} onVisualStyleChange={handleStyleChange} />
         
         <h4 className="text-md font-semibold mb-3">Dimensions</h4>
         <div className="space-y-4">
-          <div className="dimension-control">
-            <label htmlFor="sideA">Side A Length:</label>
-            <input
-              type="range"
-              id="sideA"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.sideA}
-              onChange={handleInputChange('sideA')}
-            />
-            <span className="value">{dimensions.sideA}</span>
-          </div>
-          
-          <div className="dimension-control">
-            <label htmlFor="sideB">Side B Length:</label>
-            <input
-              type="range"
-              id="sideB"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.sideB}
-              onChange={handleInputChange('sideB')}
-            />
-            <span className="value">{dimensions.sideB}</span>
-          </div>
-          
-          <div className="dimension-control">
-            <label htmlFor="sideC">Side C Length:</label>
-            <input
-              type="range"
-              id="sideC"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.sideC}
-              onChange={handleInputChange('sideC')}
-            />
-            <span className="value">{dimensions.sideC}</span>
-          </div>
-          
-          <div className="dimension-control">
-            <label htmlFor="height">Prism Height:</label>
-            <input
-              type="range"
-              id="height"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.height}
-              onChange={handleInputChange('height')}
-            />
-            <span className="value">{dimensions.height}</span>
-          </div>
+          <DimensionControl label="Side A" value={dimensions.sideA} onChange={(value) => handleInputChange('sideA')(value)} />
+          <DimensionControl label="Side B" value={dimensions.sideB} onChange={(value) => handleInputChange('sideB')(value)} />
+          <DimensionControl label="Side C" value={dimensions.sideC} onChange={(value) => handleInputChange('sideC')(value)} />
+          <DimensionControl label="Height" value={dimensions.height} onChange={(value) => handleInputChange('height')(value)} />
         </div>
       </div>
+
+      <LabelConfigControl labelConfig={labelConfig} onLabelConfigChange={handleLabelConfigChange} />
+
+      <CalculationsDisplay 
+        triangleHeight={calculations.triangleHeight} 
+        surfaceArea={calculations.surfaceArea} 
+        volume={calculations.volume} 
+      />
 
       <div className="mb-4">
         <h4 className="text-md font-semibold mb-2">Labels</h4>
