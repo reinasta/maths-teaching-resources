@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import DimensionControl from './DimensionControl';
+import LabelConfigControl from './LabelConfigControl';
+import VisualStyleSelector from './VisualStyleSelector';
+import CalculationsDisplay from './CalculationsDisplay';
 import { PrismDimensions, VisualStyle, LabelConfig } from '../Prism/prism.types';
 import { 
   updateTriangularPrismDimensions, 
@@ -82,133 +86,47 @@ const PrismControls: React.FC<PrismControlsProps> = ({
             {isUnfolded ? 'Fold Prism' : 'Unfold Prism'}
           </button>
           
-          <div className="visual-style-selector">
-            <label htmlFor="visualStyle" className="block text-sm font-medium mb-1">Visual Style:</label>
-            <select
-              id="visualStyle"
-              value={visualStyle}
-              onChange={handleStyleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="solid">Solid</option>
-              <option value="colored">Colored Faces</option>
-              <option value="wireframe">Wireframe</option>
-            </select>
-          </div>
+          <VisualStyleSelector 
+            visualStyle={visualStyle} 
+            onVisualStyleChange={onVisualStyleChange} 
+          />
         </div>
         
         <h4 className="text-md font-semibold mb-3">Dimensions</h4>
         <div className="space-y-4">
-          <div className="dimension-control">
-            <label htmlFor="sideA">Side A Length:</label>
-            <input
-              type="range"
-              id="sideA"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.sideA}
-              onChange={handleInputChange('sideA')}
-            />
-            <span className="value">{dimensions.sideA}</span>
-          </div>
-          
-          <div className="dimension-control">
-            <label htmlFor="sideB">Side B Length:</label>
-            <input
-              type="range"
-              id="sideB"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.sideB}
-              onChange={handleInputChange('sideB')}
-            />
-            <span className="value">{dimensions.sideB}</span>
-          </div>
-          
-          <div className="dimension-control">
-            <label htmlFor="sideC">Side C Length:</label>
-            <input
-              type="range"
-              id="sideC"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.sideC}
-              onChange={handleInputChange('sideC')}
-            />
-            <span className="value">{dimensions.sideC}</span>
-          </div>
-          
-          <div className="dimension-control">
-            <label htmlFor="height">Prism Height:</label>
-            <input
-              type="range"
-              id="height"
-              min="1"
-              max="5"
-              step="0.5"
-              value={dimensions.height}
-              onChange={handleInputChange('height')}
-            />
-            <span className="value">{dimensions.height}</span>
-          </div>
+          <DimensionControl 
+            label="Side A" 
+            value={dimensions.sideA} 
+            onChange={handleInputChange('sideA')} 
+          />
+          <DimensionControl 
+            label="Side B" 
+            value={dimensions.sideB} 
+            onChange={handleInputChange('sideB')} 
+          />
+          <DimensionControl 
+            label="Side C" 
+            value={dimensions.sideC} 
+            onChange={handleInputChange('sideC')} 
+          />
+          <DimensionControl 
+            label="Height" 
+            value={dimensions.height} 
+            onChange={handleInputChange('height')} 
+          />
         </div>
       </div>
 
-      <div className="mb-4">
-        <h4 className="text-md font-semibold mb-2">Labels</h4>
-        <div className="space-y-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={labelConfig.showVolume}
-              onChange={() => handleLabelConfigChange('showVolume')}
-              className="mr-2"
-            />
-            Volume Labels
-          </label>
-          
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={labelConfig.showSurfaceArea}
-              onChange={() => handleLabelConfigChange('showSurfaceArea')}
-              className="mr-2"
-            />
-            Surface Area Labels
-          </label>
-          
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={labelConfig.showFaces}
-              onChange={() => handleLabelConfigChange('showFaces')}
-              className="mr-2"
-            />
-            Face Labels
-          </label>
-        </div>
-      </div>
+      <LabelConfigControl 
+        labelConfig={labelConfig} 
+        onLabelConfigChange={handleLabelConfigChange} 
+      />
 
-      <div className="calculations">
-        <h3 className="text-lg font-semibold mb-3">Calculations</h3>
-        <div className="space-y-2">
-          <div className="calculation-row">
-            <span>Triangle Height:</span>
-            <span className="font-mono">{calculations.triangleHeight.toFixed(2)} units</span>
-          </div>
-          <div className="calculation-row">
-            <span>Surface Area:</span>
-            <span className="font-mono">{calculations.surfaceArea.toFixed(2)} sq units</span>
-          </div>
-          <div className="calculation-row">
-            <span>Volume:</span>
-            <span className="font-mono">{calculations.volume.toFixed(2)} cubic units</span>
-          </div>
-        </div>
-      </div>
+      <CalculationsDisplay 
+        triangleHeight={calculations.triangleHeight} 
+        surfaceArea={calculations.surfaceArea} 
+        volume={calculations.volume} 
+      />
     </div>
   );
 };
