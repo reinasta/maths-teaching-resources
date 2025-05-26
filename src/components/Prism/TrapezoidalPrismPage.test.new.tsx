@@ -4,7 +4,7 @@ import TrapezoidalPrism, { TrapezoidalPrismProps } from '@/components/Prism/Trap
 
 // Mock TrapezoidalPrism component
 jest.mock('@/components/Prism/TrapezoidalPrism', () => {
-  const MockComponent = (props: any) => (
+  const MockComponent = (props: TrapezoidalPrismProps) => (
     <div data-testid="trapezoidal-prism-mock" {...props}>TrapezoidalPrism Mock</div>
   );
   MockComponent.displayName = 'TrapezoidalPrismMock';

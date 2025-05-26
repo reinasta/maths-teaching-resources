@@ -1,5 +1,4 @@
 import React from 'react';
-import { PrismDimensions } from '../Prism/prism.types';
 
 interface DimensionControlProps {
   label: string;

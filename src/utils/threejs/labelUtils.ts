@@ -3,9 +3,7 @@ import {
   Group, 
   Scene, 
   LineDashedMaterial, 
-  Vector3, 
-  BufferGeometry, 
-  Line 
+  Vector3
 } from './imports';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 

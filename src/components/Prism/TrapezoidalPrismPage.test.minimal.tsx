@@ -1,17 +1,23 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import TrapezoidalPrismPage from '@/app/components/standalone/trapezoidal-prism/page';
 
 // Simple mocks
 jest.mock('@/components/Prism/TrapezoidalPrism', () => {
-  return () => <div data-testid="trapezoidal-prism-mock">TrapezoidalPrism Mock</div>;
+  const MockComponent = () => <div data-testid="trapezoidal-prism-mock">TrapezoidalPrism Mock</div>;
+  MockComponent.displayName = 'TrapezoidalPrismMock';
+  return MockComponent;
 });
 
 jest.mock('@/components/PrismControls/TrapezoidalPrismControls', () => {
-  return () => <div>TrapezoidalPrismControls Mock</div>;
+  const MockComponent = () => <div>TrapezoidalPrismControls Mock</div>;
+  MockComponent.displayName = 'TrapezoidalPrismControlsMock';
+  return MockComponent;
 });
 
 jest.mock('@/components/LabelLegend/LabelLegend', () => {
-  return () => <div>LabelLegend Mock</div>;
+  const MockComponent = () => <div>LabelLegend Mock</div>;
+  MockComponent.displayName = 'LabelLegendMock';
+  return MockComponent;
 });
 
 describe('TrapezoidalPrismPage Minimal', () => {
