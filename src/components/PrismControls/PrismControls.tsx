@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PrismDimensions, VisualStyle, LabelConfig } from '../Prism/Prism';
+import { PrismDimensions, VisualStyle, LabelConfig } from '../Prism/prism.types';
 import { 
   updateTriangularPrismDimensions, 
   updateLabelConfig,
