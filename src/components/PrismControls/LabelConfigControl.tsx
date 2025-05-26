@@ -13,6 +13,9 @@ const LabelConfigControl: React.FC<LabelConfigControlProps> = ({ labelConfig, on
       <div className="space-y-2">
         <label className="flex items-center">
           <input
+            id="face-labels"
+            id="surface-area-labels"
+            id="volume-labels"
             type="checkbox"
             checked={labelConfig.showVolume}
             onChange={() => onLabelConfigChange('showVolume')}

@@ -107,6 +107,7 @@ const PrismControls: React.FC<PrismControlsProps> = ({
       <div className="mb-4">
         <h4 className="text-md font-semibold mb-2">Labels</h4>
         <div className="space-y-2">
+        <div className="space-y-2">
           <label className="flex items-center">
             <input
               type="checkbox"

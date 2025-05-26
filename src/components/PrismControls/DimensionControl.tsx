@@ -27,6 +27,15 @@ const DimensionControl: React.FC<DimensionControlProps> = ({ label, value, onCha
         value={value}
         onChange={handleChange}
       />
+      <input
+        type="range"
+        id={label}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={handleChange}
+      />
       <span className="value">{value}</span>
     </div>
   );
