@@ -52,8 +52,8 @@ const PrismControls: React.FC<PrismControlsProps> = ({
     onUnfoldChange(newUnfoldState);
   };
 
-  const handleInputChange = (key: keyof PrismDimensions) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const sanitizedValue = sanitizeDimensionInput(event.target.value, 0.5, 5);
+  const handleInputChange = (key: keyof PrismDimensions) => (value: number) => {
+    const sanitizedValue = sanitizeDimensionInput(value.toString(), 0.5, 5);
     const updates = { [key]: sanitizedValue };
     
     const result = updateTriangularPrismDimensions(dimensions, updates);
@@ -61,10 +61,6 @@ const PrismControls: React.FC<PrismControlsProps> = ({
       onDimensionsChange(result.dimensions);
     }
     // If invalid, dimensions remain unchanged (current dimensions are returned)
-  };
-
-  const handleStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onVisualStyleChange(event.target.value as VisualStyle);
   };
 
   const handleLabelConfigChange = (key: keyof LabelConfig) => {

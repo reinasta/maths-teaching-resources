@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Prism, { VisualStyle } from '@/components/Prism/Prism';
+import Prism from '@/components/Prism/Prism';
+import { VisualStyle } from '@/components/Prism/prism.types';
 import PrismControls from './PrismControls';
 import { PrismDimensions, LabelConfig } from './types';
 import { usePrismCalculations } from './hooks/usePrismCalculations';

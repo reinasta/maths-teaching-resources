@@ -1,5 +1,5 @@
 import React from 'react';
-import { LabelConfig } from '../Prism/Prism';
+import { LabelConfig } from '../Prism/prism.types';
 
 interface LabelLegendProps {
   labelConfig: LabelConfig;

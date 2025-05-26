@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import Prism, { PrismDimensions, VisualStyle, LabelConfig } from '../../../components/Prism/Prism';
+import Prism from '../../../components/Prism/Prism';
+import { PrismDimensions, VisualStyle, LabelConfig } from '../../../components/Prism/prism.types';
 import PrismControls from '../../../components/PrismControls/PrismControls';
 import LabelLegend from '../../../components/LabelLegend/LabelLegend';
 

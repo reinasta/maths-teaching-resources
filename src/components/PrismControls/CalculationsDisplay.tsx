@@ -10,7 +10,6 @@ const CalculationsDisplay: React.FC<CalculationsDisplayProps> = ({ triangleHeigh
   return (
     <div className="calculations">
       <h3 className="text-lg font-semibold mb-3">Calculations</h3>
-      <h3 className="text-lg font-semibold mb-3">Calculations</h3>
       <div className="space-y-2">
         <div className="calculation-row">
           <span>Triangle Height:</span>
