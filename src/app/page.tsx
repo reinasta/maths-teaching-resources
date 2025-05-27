@@ -1,6 +1,7 @@
 // src/app/page.tsx
 import React from 'react'
 import Link from 'next/link'
+import WorksheetsSection from '@/components/WorksheetsSection'
 
 export default function Home() {
   return (
@@ -36,6 +37,9 @@ export default function Home() {
               </Link>
             </div>
           </section>
+
+          {/* Worksheets Section */}
+          <WorksheetsSection />
 
           {/* Components Section */}
           <section className="col-span-full">

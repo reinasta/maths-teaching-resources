@@ -1,0 +1,95 @@
+
+> remaths@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.1.7
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.170:3000
+
+ ✓ Starting...
+   Disabled SWC as replacement for Babel because of custom Babel configuration "babel.config.js" https://nextjs.org/docs/messages/swc-disabled
+ ✓ Ready in 1170ms
+   Using external babel configuration from /Users/rei/Documents/code/js-projects/remaths/babel.config.js
+ ⚠ It looks like there is a custom Babel configuration that can be removed.
+ ○ Compiling / ...
+ ✓ Compiled / in 6s (692 modules)
+ ✓ Compiled in 373ms (320 modules)
+ GET /?id=1ed67037-ad43-4c65-a8fa-1c7c5a2e4a61&vscodeBrowserReqId=1748338714660 200 in 6423ms
+ ✓ Compiled /worksheets in 262ms (687 modules)
+ GET /worksheets?id=1ed67037-ad43-4c65-a8fa-1c7c5a2e4a61&vscodeBrowserReqId=1748338733673 200 in 407ms
+ ○ Compiling /worksheets/[slug] ...
+ ✓ Compiled /worksheets/[slug] in 1137ms (879 modules)
+ GET /worksheets/laws-of-indices 200 in 1839ms
+ GET /worksheets/algebra-basics?id=b22a02ca-038e-49e5-bcd2-6357b26b8ec5&vscodeBrowserReqId=1748338790377 200 in 79ms
+ GET /worksheets/fractions-decimals?id=9b8e71ff-71e5-4799-9f03-bdeb4e51632e&vscodeBrowserReqId=1748338815467 200 in 56ms
+ ⨯ Error: Cannot find module './507.js'
+Require stack:
+- /Users/rei/Documents/code/js-projects/remaths/.next/server/webpack-runtime.js
+- /Users/rei/Documents/code/js-projects/remaths/.next/server/app/worksheets/[slug]/page.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/require.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/load-components.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/build/utils.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/build/swc/options.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/build/swc/index.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/lib/router-server.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/lib/start-server.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:198:28)
+    at <unknown> (.next/server/webpack-runtime.js:111:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:162:22)
+    at <unknown> (.next/server/app/page.js:1:11231)
+    at Object.<anonymous> (.next/server/app/page.js:1:11288) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.3s (1149 modules)
+ GET /worksheets/fractions-decimals?id=9b8e71ff-71e5-4799-9f03-bdeb4e51632e&vscodeBrowserReqId=1748338815467 200 in 608ms
+ GET /worksheets/fractions-decimals?id=9b8e71ff-71e5-4799-9f03-bdeb4e51632e&vscodeBrowserReqId=1748338815467 200 in 13ms
+ ⨯ Failed to generate static paths for /worksheets/[slug]:
+Error: Cannot find module './vendor-chunks/esprima.js'
+Require stack:
+- /Users/rei/Documents/code/js-projects/remaths/.next/server/webpack-runtime.js
+- /Users/rei/Documents/code/js-projects/remaths/.next/server/app/worksheets/[slug]/page.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/require.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/load-components.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/build/utils.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/dev/static-paths-worker.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:198:28)
+    at <unknown> (.next/server/webpack-runtime.js:111:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:110:67) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⨯ Failed to generate static paths for /worksheets/[slug]:
+Error: Cannot find module './vendor-chunks/esprima.js'
+Require stack:
+- /Users/rei/Documents/code/js-projects/remaths/.next/server/webpack-runtime.js
+- /Users/rei/Documents/code/js-projects/remaths/.next/server/app/worksheets/[slug]/page.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/require.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/load-components.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/build/utils.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/server/dev/static-paths-worker.js
+- /Users/rei/Documents/code/js-projects/remaths/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:198:28)
+    at <unknown> (.next/server/webpack-runtime.js:111:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:110:67) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET / 500 in 2959ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 667ms (1153 modules)
+ GET /_next/static/css/app/layout.css?v=1748338923559 404 in 729ms
+[?25h
