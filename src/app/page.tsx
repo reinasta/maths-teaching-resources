@@ -99,6 +99,19 @@ export default function Home() {
                 </p>
               </Link>
 
+              <Link
+                href="/components/standalone/equation-of-circle"
+                className="block p-6 bg-white border border-gray-200 rounded-lg 
+                         hover:border-primary hover:shadow-md transition-all"
+              >
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  Equation of a Circle
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Video explaining the equation of a circle with centre (a,b)
+                </p>
+              </Link>
+
               <Link 
                 href="/components/standalone/trapezoidal-prism" 
                 className="block p-6 bg-white border border-gray-200 rounded-lg 

@@ -17,12 +17,21 @@ export default function WorksheetCard({ slug, frontmatter }: WorksheetCardProps)
         <p className="text-gray-600 text-sm line-clamp-2">
           {frontmatter.description}
         </p>
+        {frontmatter.date && (
+          <p className="text-gray-500 text-xs mt-2">
+            Updated: {new Date(frontmatter.date).toLocaleDateString('en-US', {
+              month: 'numeric',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </p>
+        )}
       </div>
 
       {/* Tags */}
       {frontmatter.tags && frontmatter.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-4">
-          {frontmatter.tags.slice(0, 2).map((tag) => (
+          {frontmatter.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
@@ -30,9 +39,9 @@ export default function WorksheetCard({ slug, frontmatter }: WorksheetCardProps)
               {tag}
             </span>
           ))}
-          {frontmatter.tags.length > 2 && (
+          {frontmatter.tags.length > 3 && (
             <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-              +{frontmatter.tags.length - 2}
+              +{frontmatter.tags.length - 3} more
             </span>
           )}
         </div>
@@ -47,7 +56,7 @@ export default function WorksheetCard({ slug, frontmatter }: WorksheetCardProps)
             rel="noopener noreferrer"
             className="inline-flex items-center px-3 py-2 bg-blue-50 text-blue-700 text-sm rounded-md border border-blue-300 hover:bg-blue-100 hover:border-blue-400 transition-colors w-full justify-center"
           >
-            Download Worksheet
+            📄 Download Worksheet
           </a>
         )}
         {frontmatter.answersPdf && (
@@ -57,7 +66,7 @@ export default function WorksheetCard({ slug, frontmatter }: WorksheetCardProps)
             rel="noopener noreferrer"
             className="inline-flex items-center px-3 py-2 bg-emerald-50 text-emerald-700 text-sm rounded-md border border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400 transition-colors w-full justify-center"
           >
-            Download Answers
+            ✅ Download Answers
           </a>
         )}
       </div>

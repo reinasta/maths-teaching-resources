@@ -73,12 +73,35 @@ describe('WorksheetCard', () => {
       />
     );
 
-    // Should show first 2 tags
+    // Should show all 3 tags since there are exactly 3
     expect(screen.getByText('algebra')).toBeInTheDocument();
     expect(screen.getByText('basics')).toBeInTheDocument();
+    expect(screen.getByText('variables')).toBeInTheDocument();
     
-    // Should show +1 indicator for additional tags
-    expect(screen.getByText('+1')).toBeInTheDocument();
+    // Should not show counter since there are only 3 tags
+    expect(screen.queryByText('+0 more')).not.toBeInTheDocument();
+  });
+
+  it('should limit displayed tags to 3 and show counter for more', () => {
+    const frontmatterWithManyTags = {
+      ...mockFrontmatter,
+      tags: ['algebra', 'basics', 'variables', 'equations', 'math']
+    };
+    
+    render(
+      <WorksheetCard 
+        slug="algebra-basics" 
+        frontmatter={frontmatterWithManyTags} 
+      />
+    );
+
+    // Should show first 3 tags
+    expect(screen.getByText('algebra')).toBeInTheDocument();
+    expect(screen.getByText('basics')).toBeInTheDocument();
+    expect(screen.getByText('variables')).toBeInTheDocument();
+    
+    // Should show +2 more indicator
+    expect(screen.getByText('+2 more')).toBeInTheDocument();
   });
 
   it('should render without tags when none provided', () => {
@@ -92,7 +115,7 @@ describe('WorksheetCard', () => {
     );
 
     expect(screen.queryByText('algebra')).not.toBeInTheDocument();
-    expect(screen.queryByText('+1')).not.toBeInTheDocument();
+    expect(screen.queryByText('+2 more')).not.toBeInTheDocument();
   });
 
   it('should handle missing PDF links gracefully', () => {
