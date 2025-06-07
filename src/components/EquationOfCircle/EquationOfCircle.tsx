@@ -12,7 +12,7 @@ const EquationOfCircle: React.FC = () => {
           preload="metadata"
           playsInline
         >
-          <source src="/videos/components/PythagorasCircleIllustration.mp4" type="video/mp4" />
+          <source src="/videos/components/equation-of-a-circle-from-00-to-ab.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>

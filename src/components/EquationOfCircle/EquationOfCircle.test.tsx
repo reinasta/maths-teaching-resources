@@ -8,6 +8,6 @@ describe('EquationOfCircle Video Component', () => {
     expect(screen.getByText('Equation of a Circle')).toBeInTheDocument();
     const videoElement = screen.getByTestId('equation-of-circle-video');
     expect(videoElement).toBeInTheDocument();
-    expect(videoElement.querySelector('source[src="/videos/components/PythagorasCircleIllustration.mp4"]')).toBeInTheDocument();
+    expect(videoElement.querySelector('source[src="/videos/components/equation-of-a-circle-from-00-to-ab.mp4"]')).toBeInTheDocument();
   });
 });
