@@ -13,7 +13,7 @@ const Enlargement: React.FC = () => (
           playsInline
         >
           <source
-            src="/videos/components/EnlargementScene.mp4"
+            src="/videos/components/EnlargementDemo.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.

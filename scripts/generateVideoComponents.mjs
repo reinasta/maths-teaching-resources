@@ -18,9 +18,14 @@ function updateLandingPage(linkBlock, href) {
   const landingPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'app', 'page.tsx');
   const page = fs.readFileSync(landingPath, 'utf-8');
 
-  // Find the Interactive Tools section grid
+  // Find the Interactive Tools section specifically
+  const toolsSectionMarker = '<h2 className="text-2xl font-semibold text-gray-900 mb-4">\n              Interactive Tools\n            </h2>';
+  const toolsSection = page.indexOf(toolsSectionMarker);
+  if (toolsSection === -1) throw new Error('Interactive Tools section not found');
+  
+  // Find the grid div after the Interactive Tools heading
   const gridStartMarker = '<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">';
-  const gridStart = page.indexOf(gridStartMarker);
+  const gridStart = page.indexOf(gridStartMarker, toolsSection);
   if (gridStart === -1) throw new Error('Interactive Tools grid not found');
   
   const gridContentStart = gridStart + gridStartMarker.length;
