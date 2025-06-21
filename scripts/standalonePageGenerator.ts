@@ -1,9 +1,15 @@
-"use client";
+import { VideoEntry } from './markdownParser';
+
+export function generateStandalonePage(entry: VideoEntry): string {
+  const { componentName, description } = entry;
+  const kebabName = componentName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+  const displayName = componentName.replace(/([A-Z])/g, ' $1').trim();
+  return `"use client";
 import React, { useState, useEffect } from "react";
-import Enlargement from "@/components/Enlargement";
+import ${componentName} from "@/components/${componentName}";
 import StandaloneLayout from "@/components/StandaloneLayout";
 
-export default function EnlargementPage() {
+export default function ${componentName}Page() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500);
@@ -20,11 +26,13 @@ export default function EnlargementPage() {
   }
   return (
     <StandaloneLayout>
-      <h1 className="text-3xl font-bold mb-6">Enlargement Video</h1>
+      <h1 className="text-3xl font-bold mb-6">${displayName} Video</h1>
       <p className="mb-8">
-        Video about enlargement transformations in geometry.
+        ${description}
       </p>
-      <Enlargement />
+      <${componentName} />
     </StandaloneLayout>
   );
+}
+`;
 }

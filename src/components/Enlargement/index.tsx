@@ -1,1 +1,1 @@
-export { default } from './Enlargement';
+export { default } from "./Enlargement";

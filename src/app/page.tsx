@@ -35,7 +35,27 @@ export default function Home() {
                   Learn how to convert between different units using coordinate graphs
                 </p>
               </Link>
-            </div>
+            
+<Link
+  href="/components/standalone/area-under-graphs"
+  className="block p-6 bg-white border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition-all"
+>
+  <h3 className="text-xl font-medium text-gray-900 mb-2">Area Under Graphs</h3>
+  <p className="text-gray-600 leading-relaxed">
+    Video demonstration about calculating the area under graphs.
+  </p>
+</Link>
+
+<Link
+  href="/components/standalone/enlargement"
+  className="block p-6 bg-white border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition-all"
+>
+  <h3 className="text-xl font-medium text-gray-900 mb-2">Enlargement</h3>
+  <p className="text-gray-600 leading-relaxed">
+    Video about enlargement transformations in geometry.
+  </p>
+</Link>
+</div>
           </section>
 
           {/* Worksheets Section */}
@@ -122,6 +142,19 @@ export default function Home() {
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
                   Explore the properties of a trapezoidal prism in 3D
+                </p>
+              </Link>
+
+              <Link
+                href="/components/standalone/area-under-graphs"
+                className="block p-6 bg-white border border-gray-200 rounded-lg 
+                         hover:border-primary hover:shadow-md transition-all"
+              >
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  Area Under Graphs
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Video demonstration about calculating the area under graphs
                 </p>
               </Link>
             </div>

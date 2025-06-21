@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Enlargement from "@/components/Enlargement";
+import AreaUnderGraphs from "@/components/AreaUnderGraphs";
 import StandaloneLayout from "@/components/StandaloneLayout";
 
-export default function EnlargementPage() {
+export default function AreaUnderGraphsPage() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500);
@@ -20,11 +20,11 @@ export default function EnlargementPage() {
   }
   return (
     <StandaloneLayout>
-      <h1 className="text-3xl font-bold mb-6">Enlargement Video</h1>
+      <h1 className="text-3xl font-bold mb-6">Area Under Graphs Video</h1>
       <p className="mb-8">
-        Video about enlargement transformations in geometry.
+        Video demonstration about calculating the area under graphs.
       </p>
-      <Enlargement />
+      <AreaUnderGraphs />
     </StandaloneLayout>
   );
 }
