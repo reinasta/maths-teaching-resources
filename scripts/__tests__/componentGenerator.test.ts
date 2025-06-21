@@ -10,6 +10,7 @@ describe('generateComponentFiles', () => {
       description: 'Video demonstration about calculating the area under graphs.'
     };
     const files = generateComponentFiles(entry);
+    expect(files['AreaUnderGraphs.tsx']).toContain('<div data-testid="area-under-graphs-canvas"');
     expect(files['AreaUnderGraphs.tsx']).toContain('<video');
     expect(files['AreaUnderGraphs.tsx']).toContain('Area Under Graphs');
     expect(files['AreaUnderGraphs.tsx']).toContain('/videos/components/AreaUnderGraphsScene.mp4');

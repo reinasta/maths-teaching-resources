@@ -35,8 +35,7 @@ export default function Home() {
                   Learn how to convert between different units using coordinate graphs
                 </p>
               </Link>
-            
-<Link
+              <Link
   href="/components/standalone/area-under-graphs"
   className="block p-6 bg-white border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition-all"
 >
@@ -45,8 +44,7 @@ export default function Home() {
     Video demonstration about calculating the area under graphs.
   </p>
 </Link>
-
-<Link
+              <Link
   href="/components/standalone/enlargement"
   className="block p-6 bg-white border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition-all"
 >
@@ -54,8 +52,7 @@ export default function Home() {
   <p className="text-gray-600 leading-relaxed">
     Video about enlargement transformations in geometry.
   </p>
-</Link>
-</div>
+</Link></div>
           </section>
 
           {/* Worksheets Section */}

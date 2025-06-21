@@ -7,8 +7,7 @@ import {
   Material,
   LineSegments
 } from '../../utils/threejs/imports';
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { CSS2DRenderer, CSS2DObject, OrbitControls } from '../../utils/threejs/imports';
 import { PrismDimensions, VisualStyle, LabelConfig } from './prism.types';
 import { updateLabels } from './labelUpdater';
 import { createPrismGeometry } from '../../utils/threejs/geometryCalculations';

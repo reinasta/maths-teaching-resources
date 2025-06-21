@@ -19,25 +19,35 @@ function updateLandingPage(linkBlock, href) {
   const page = fs.readFileSync(landingPath, 'utf-8');
 
   // Find the Interactive Tools section grid
-  const gridStart = page.indexOf('<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">');
+  const gridStartMarker = '<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">';
+  const gridStart = page.indexOf(gridStartMarker);
   if (gridStart === -1) throw new Error('Interactive Tools grid not found');
-  const gridEnd = page.indexOf('</div>', gridStart);
+  
+  const gridContentStart = gridStart + gridStartMarker.length;
+  const gridEnd = page.indexOf('</div>', gridContentStart);
   if (gridEnd === -1) throw new Error('End of Interactive Tools grid not found');
 
-  // Regex to match an existing Link with the same href
-  const linkRegex = new RegExp(`<Link[^>]+href=(["'])${href}\\1[\s\S]*?</Link>`, 'g');
-  let gridContent = page.slice(gridStart, gridEnd);
-  if (linkRegex.test(gridContent)) {
-    // Replace existing link
-    gridContent = gridContent.replace(linkRegex, linkBlock);
-  } else {
-    // Insert before closing </div>
-    gridContent = gridContent + '\n' + linkBlock + '\n';
-  }
+  let gridContent = page.slice(gridContentStart, gridEnd);
+  
+  // Build a regex to match the specific Link block for this href
+  const linkRegex = new RegExp(
+    `\\s*<Link[^>]*href="${href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[\\s\\S]*?</Link>`,
+    'g'
+  );
+  
+  // Remove any existing links with this href
+  const beforeRemoval = gridContent;
+  gridContent = gridContent.replace(linkRegex, '');
+  
+  // Add the new link block (with proper indentation)
+  gridContent = gridContent + '\n              ' + linkBlock;
+  
   // Reconstruct the page
-  const newPage = page.slice(0, gridStart) + gridContent + page.slice(gridEnd);
+  const newPage = page.slice(0, gridContentStart) + gridContent + page.slice(gridEnd);
   fs.writeFileSync(landingPath, newPage, 'utf-8');
-  console.warn(`Landing page updated for ${href}`);
+  
+  const wasUpdated = beforeRemoval !== gridContent.replace('\n              ' + linkBlock, '');
+  console.warn(`Landing page ${wasUpdated ? 'updated' : 'added link'} for ${href}`);
 }
 
 for (const entry of entries) {

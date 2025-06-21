@@ -1,0 +1,40 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Generate Worksheet Pages",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"scripts/generateWorksheetPages.mjs",
+				"content/worksheet_sources/worksheets.md"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Generate Worksheet Pages (Force)",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"scripts/generateWorksheetPages.mjs",
+				"content/worksheet_sources/worksheets.md",
+				"--force"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		}
+	]
+}

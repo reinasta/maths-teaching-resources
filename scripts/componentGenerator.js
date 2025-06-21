@@ -1,35 +1,42 @@
-export function generateComponentFiles(entry) {
-  const { componentName, videoFile, videoPath } = entry;
-  const displayName = componentName.replace(/([A-Z])/g, ' $1').trim();
-  const testId = componentName.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '') + '-video';
-  const component = `import React from "react";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateComponentFiles = generateComponentFiles;
+function generateComponentFiles(entry) {
+    const { componentName, videoFile, videoPath, description } = entry;
+    const displayName = componentName.replace(/([A-Z])/g, ' $1').trim();
+    const baseTestId = componentName.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
+    const videoTestId = baseTestId + '-video';
+    const canvasTestId = baseTestId + '-canvas';
+    const component = `import React from "react";
 
-const ${componentName} = () => (
+const ${componentName}: React.FC = () => (
   <div className="flex flex-col gap-8">
     <div>
       <h2 className="text-2xl font-semibold mb-4">${displayName}</h2>
-      <video
-        data-testid="${testId}"
-        controls
-        className="w-full rounded-lg shadow-lg"
-        preload="metadata"
-        playsInline
-      >
-        <source
-          src="/${videoPath}"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
+      <div data-testid="${canvasTestId}">
+        <video
+          data-testid="${videoTestId}"
+          controls
+          className="w-full rounded-lg shadow-lg"
+          preload="metadata"
+          playsInline
+        >
+          <source
+            src="/${videoPath}"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </div>
   </div>
 );
 
 export default ${componentName};
 `;
-  const index = `export { default } from "./${componentName}";\n`;
-  return {
-    [`${componentName}.tsx`]: component,
-    'index.tsx': index
-  };
+    const index = `export { default } from "./${componentName}";\n`;
+    return {
+        [`${componentName}.tsx`]: component,
+        'index.tsx': index
+    };
 }

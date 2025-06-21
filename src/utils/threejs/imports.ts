@@ -60,3 +60,7 @@ export {
 export {
   DoubleSide
 } from 'three';
+
+// Examples/JSM modules
+export { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+export { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';

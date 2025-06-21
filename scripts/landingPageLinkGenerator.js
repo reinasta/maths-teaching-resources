@@ -1,8 +1,11 @@
-export function generateLandingPageLink(entry) {
-  const { componentName, description } = entry;
-  const kebabName = componentName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-  const displayName = componentName.replace(/([A-Z])/g, ' $1').trim();
-  return `<Link
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateLandingPageLink = generateLandingPageLink;
+function generateLandingPageLink(entry) {
+    const { componentName, description } = entry;
+    const kebabName = componentName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const displayName = componentName.replace(/([A-Z])/g, ' $1').trim();
+    return `<Link
   href="/components/standalone/${kebabName}"
   className="block p-6 bg-white border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition-all"
 >

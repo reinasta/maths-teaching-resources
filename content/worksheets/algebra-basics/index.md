@@ -8,6 +8,8 @@ tags: ["algebra", "basics", "variables"]
 slug: "algebra-basics"
 ---
 
+**To Be Completed**
+
 ## Worksheet Overview
 
 This worksheet introduces students to fundamental algebraic concepts. Students will learn:

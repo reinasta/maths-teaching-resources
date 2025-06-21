@@ -8,6 +8,8 @@ tags: ["geometry", "shapes", "area", "perimeter"]
 slug: "geometry-shapes"
 ---
 
+**To Be Completed**
+
 ## Worksheet Overview
 
 This worksheet covers fundamental geometric shapes and their properties. Students will explore:

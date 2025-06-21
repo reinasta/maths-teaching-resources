@@ -1,23 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Enlargement from "@/components/Enlargement";
 import StandaloneLayout from "@/components/StandaloneLayout";
 
 export default function EnlargementPage() {
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
-  if (loading) {
-    return (
-      <StandaloneLayout>
-        <div className="flex justify-center items-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
-        </div>
-      </StandaloneLayout>
-    );
-  }
   return (
     <StandaloneLayout>
       <h1 className="text-3xl font-bold mb-6">Enlargement Video</h1>

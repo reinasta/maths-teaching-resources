@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { CSS2DRenderer, CSS2DObject } from '../../utils/threejs/imports';
 import { 
   WebGLRenderer, 
   Scene, 

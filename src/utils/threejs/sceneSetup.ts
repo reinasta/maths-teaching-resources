@@ -8,8 +8,8 @@ import {
   Color, 
   Camera 
 } from './imports';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { OrbitControls } from './imports';
+import { CSS2DRenderer } from './imports';
 
 /**
  * Creates a standard camera configuration for prism visualizations

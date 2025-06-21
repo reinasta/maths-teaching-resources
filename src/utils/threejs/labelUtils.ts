@@ -5,7 +5,7 @@ import {
   LineDashedMaterial, 
   Vector3
 } from './imports';
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { CSS2DObject } from './imports';
 
 export interface LabelConfig {
   showVolume: boolean;
